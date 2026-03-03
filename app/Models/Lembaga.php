@@ -46,7 +46,12 @@ class Lembaga extends Model
 
     public function berita()
     {
-        return $this->hasMany(Berita::class);
+        return $this->belongsToMany(Berita::class, 'berita_lembaga');
+    }
+
+    public function beritas()
+    {
+        return $this->belongsToMany(Berita::class, 'berita_lembaga');
     }
 
     /**

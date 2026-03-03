@@ -34,15 +34,21 @@
 
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Lembaga</label>
-                <select name="lembaga_id"
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition @error('lembaga_id') border-red-500 @enderror">
-                    <option value="">Umum (Semua Lembaga)</option>
+                <p class="text-amber-600 text-sm mb-2">Kosongkan jika berita untuk semua lembaga. Bisa pilih lebih dari 1.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-4 border border-gray-300 rounded-lg bg-gray-50">
                     @foreach($lembagaList as $lembaga)
-                        <option value="{{ $lembaga->id }}" {{ old('lembaga_id') == $lembaga->id ? 'selected' : '' }}>{{ $lembaga->nama }}</option>
+                        <label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer transition">
+                            <input 
+                                type="checkbox" 
+                                name="lembaga_ids[]" 
+                                value="{{ $lembaga->id }}"
+                                {{ in_array($lembaga->id, old('lembaga_ids', [])) ? 'checked' : '' }}
+                                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-gray-700">{{ $lembaga->nama }}</span>
+                        </label>
                     @endforeach
-                </select>
-                <p class="text-gray-500 text-sm mt-1">Kosongkan jika berita untuk semua lembaga (ditampilkan di halaman utama saja)</p>
-                @error('lembaga_id')
+                </div>
+                @error('lembaga_ids')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>

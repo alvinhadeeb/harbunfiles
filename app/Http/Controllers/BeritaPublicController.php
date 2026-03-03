@@ -23,7 +23,9 @@ class BeritaPublicController extends Controller
         if ($request->has('lembaga') && $request->lembaga) {
             $lembagaFilter = Lembaga::find($request->lembaga);
             if ($lembagaFilter) {
-                $query->where('lembaga_id', $lembagaFilter->id);
+                $query->whereHas('lembagas', function ($q) use ($lembagaFilter) {
+                    $q->where('lembaga.id', $lembagaFilter->id);
+                });
             }
         }
 

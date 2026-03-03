@@ -14,7 +14,7 @@ class BeritaController extends Controller
 {
     public function index()
     {
-        $berita = Berita::with('lembaga')->orderByDesc('tanggal')->paginate(10);
+        $berita = Berita::with('lembagas')->orderByDesc('tanggal')->paginate(10);
         return view('minda.berita.index', compact('berita'));
     }
 
@@ -33,7 +33,8 @@ class BeritaController extends Controller
             'kategori' => 'required',
             'gambar' => 'nullable|image|max:2048',
             'status' => 'required|in:draft,published',
-            'lembaga_id' => 'nullable|exists:lembaga,id',
+            'lembaga_ids' => 'nullable|array',
+            'lembaga_ids.*' => 'exists:lembaga,id',
             'tanggal' => 'nullable|date',
         ]);
 
@@ -42,19 +43,26 @@ class BeritaController extends Controller
         }
 
         $validated['slug'] = Str::slug($validated['judul']);
-        $validated['lembaga_id'] = $request->lembaga_id ?: null;
+        
+        // Hapus lembaga_ids dari validated (bukan kolom di tabel berita)
+        $lembagaIds = $request->input('lembaga_ids', []);
+        unset($validated['lembaga_ids']);
 
-        Berita::create($validated);
+        $berita = Berita::create($validated);
+        
+        // Sync lembaga (many-to-many)
+        $berita->lembagas()->sync($lembagaIds);
 
         return redirect()->route('minda.berita.index')->with('success', 'Berita berhasil ditambahkan');
     }
 
     public function edit(string $id)
     {
-        $berita = Berita::findOrFail($id);
+        $berita = Berita::with('lembagas')->findOrFail($id);
         $kategoriList = Kategori::orderBy('nama')->get();
         $lembagaList = Lembaga::where('aktif', true)->orderBy('urutan')->get();
-        return view('minda.berita.edit', compact('berita', 'kategoriList', 'lembagaList'));
+        $selectedLembagas = $berita->lembagas->pluck('id')->toArray();
+        return view('minda.berita.edit', compact('berita', 'kategoriList', 'lembagaList', 'selectedLembagas'));
     }
 
     public function update(Request $request, string $id)
@@ -67,7 +75,8 @@ class BeritaController extends Controller
             'kategori' => 'required',
             'gambar' => 'nullable|image|max:2048',
             'status' => 'required|in:draft,published',
-            'lembaga_id' => 'nullable|exists:lembaga,id',
+            'lembaga_ids' => 'nullable|array',
+            'lembaga_ids.*' => 'exists:lembaga,id',
             'tanggal' => 'nullable|date',
         ]);
 
@@ -79,9 +88,15 @@ class BeritaController extends Controller
         }
 
         $validated['slug'] = Str::slug($validated['judul']);
-        $validated['lembaga_id'] = $request->lembaga_id ?: null;
+        
+        // Hapus lembaga_ids dari validated (bukan kolom di tabel berita)
+        $lembagaIds = $request->input('lembaga_ids', []);
+        unset($validated['lembaga_ids']);
 
         $berita->update($validated);
+        
+        // Sync lembaga (many-to-many)
+        $berita->lembagas()->sync($lembagaIds);
 
         return redirect()->route('minda.berita.index')->with('success', 'Berita berhasil diupdate');
     }

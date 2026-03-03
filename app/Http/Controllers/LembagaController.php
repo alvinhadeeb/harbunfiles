@@ -13,9 +13,11 @@ class LembagaController extends Controller
     {
         $lembaga = Lembaga::where('slug', $slug)->firstOrFail();
 
-        // Ambil berita terbaru milik lembaga ini
+        // Ambil berita terbaru milik lembaga ini (many-to-many)
         $beritaTerbaru = Berita::where('status', 'published')
-            ->where('lembaga_id', $lembaga->id)
+            ->whereHas('lembagas', function ($q) use ($lembaga) {
+                $q->where('lembaga.id', $lembaga->id);
+            })
             ->orderByDesc('tanggal')
             ->take(5)
             ->get();

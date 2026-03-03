@@ -16,7 +16,6 @@ class Berita extends Model
         'kategori',
         'gambar',
         'status',
-        'lembaga_id',
         'tanggal',
     ];
 
@@ -24,9 +23,20 @@ class Berita extends Model
         'tanggal' => 'date',
     ];
 
-    public function lembaga()
+    /**
+     * Many-to-many: berita bisa punya banyak lembaga
+     */
+    public function lembagas()
     {
-        return $this->belongsTo(Lembaga::class);
+        return $this->belongsToMany(Lembaga::class, 'berita_lembaga');
+    }
+
+    /**
+     * Backward compatible: ambil lembaga pertama (untuk tampilan yang hanya butuh 1)
+     */
+    public function getLembagaAttribute()
+    {
+        return $this->lembagas->first();
     }
 
     protected static function boot()

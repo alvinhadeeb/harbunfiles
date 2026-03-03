@@ -46,8 +46,12 @@
                             <p class="text-xs text-gray-500 mt-1">{{ $item->slug }}</p>
                         </td>
                         <td class="py-4 px-6">
-                            @if($item->lembaga)
-                                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">{{ $item->lembaga->nama }}</span>
+                            @if($item->lembagas->count() > 0)
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($item->lembagas as $lbg)
+                                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">{{ $lbg->nama }}</span>
+                                    @endforeach
+                                </div>
                             @else
                                 <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-medium">Umum</span>
                             @endif
