@@ -38,7 +38,7 @@
                         <input type="checkbox" name="permissions[]" value="{{ $key }}"
                             {{ in_array($key, old('permissions', [])) ? 'checked' : '' }}
                             class="mt-0.5 rounded text-purple-600"
-                            @if($key === 'lembaga') id="permLembaga" onchange="toggleLembagaSection()" @endif>
+>
                         <div>
                             <span class="font-semibold text-gray-700 text-sm">{{ $perm['label'] }}</span>
                             <p class="text-xs text-gray-500">{{ $perm['description'] }}</p>
@@ -54,10 +54,10 @@
             </div>
 
             {{-- Pilih Lembaga --}}
-            <div id="lembagaSection" class="mb-6 hidden">
+            <div id="lembagaSection" class="mb-6">
                 <div class="p-4 bg-purple-50 border border-purple-200 rounded-xl">
                     <label class="block text-gray-700 font-semibold mb-1">Batasi Akses Lembaga</label>
-                    <p class="text-xs text-gray-500 mb-3">Pilih lembaga mana saja yang bisa dikelola role ini. Kosongkan jika boleh akses <strong>semua lembaga</strong>.</p>
+                    <p class="text-xs text-gray-500 mb-3">Pilih lembaga mana saja yang bisa dikelola role ini (berita, galeri, dll). Kosongkan jika boleh akses <strong>semua lembaga</strong>.</p>
                     @error('allowed_lembaga')<p class="text-red-500 text-sm mb-2">{{ $message }}</p>@enderror
                     <div class="grid grid-cols-2 gap-2">
                         @foreach($lembagaList as $lmb)
@@ -98,20 +98,6 @@
 <script>
 function selectAll(checked) {
     document.querySelectorAll('input[name="permissions[]"]').forEach(cb => cb.checked = checked);
-    toggleLembagaSection();
 }
-
-function toggleLembagaSection() {
-    const lembagaCb = document.getElementById('permLembaga');
-    const section = document.getElementById('lembagaSection');
-    if (lembagaCb && lembagaCb.checked) {
-        section.classList.remove('hidden');
-    } else {
-        section.classList.add('hidden');
-    }
-}
-
-// Jalankan saat load (untuk old() values)
-document.addEventListener('DOMContentLoaded', toggleLembagaSection);
 </script>
 @endsection

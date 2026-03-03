@@ -23,10 +23,35 @@ class AdminRole extends Model
 
     /**
      * Cek apakah role ini punya permission tertentu
+     * Otomatis grant 'lembaga' dan 'berita' jika allowed_lembaga di-set
      */
     public function hasPermission(string $permission): bool
     {
+        // Jika role punya allowed_lembaga, otomatis bisa akses lembaga & berita
+        if (!empty($this->allowed_lembaga) && in_array($permission, ['lembaga', 'berita'])) {
+            return true;
+        }
+
         return in_array($permission, $this->permissions ?? []);
+    }
+
+    /**
+     * Ambil semua permission termasuk yang otomatis dari allowed_lembaga
+     */
+    public function getAllPermissions(): array
+    {
+        $perms = $this->permissions ?? [];
+
+        // Auto-grant lembaga & berita jika allowed_lembaga di-set
+        if (!empty($this->allowed_lembaga)) {
+            foreach (['lembaga', 'berita'] as $p) {
+                if (!in_array($p, $perms)) {
+                    $perms[] = $p;
+                }
+            }
+        }
+
+        return $perms;
     }
 
     /**

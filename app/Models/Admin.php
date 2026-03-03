@@ -79,7 +79,7 @@ class Admin extends Authenticatable
 
         // Dari role
         if ($this->admin_role_id && $this->adminRole) {
-            return $this->adminRole->permissions ?? [];
+            return $this->adminRole->getAllPermissions();
         }
 
         // Fallback per-admin

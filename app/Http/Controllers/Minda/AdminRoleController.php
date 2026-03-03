@@ -48,9 +48,9 @@ class AdminRoleController extends Controller
             'permissions.min' => 'Pilih minimal 1 permission.',
         ]);
 
-        // allowed_lembaga: hanya simpan jika permission lembaga dicentang
+        // allowed_lembaga: batasi akses lembaga untuk role ini
         $allowedLembaga = null;
-        if (in_array('lembaga', $validated['permissions']) && $request->has('allowed_lembaga')) {
+        if ($request->has('allowed_lembaga') && !empty($request->input('allowed_lembaga'))) {
             $allowedLembaga = array_map('intval', $request->input('allowed_lembaga'));
         }
 
@@ -94,9 +94,9 @@ class AdminRoleController extends Controller
             'permissions.min' => 'Pilih minimal 1 permission.',
         ]);
 
-        // allowed_lembaga: hanya simpan jika permission lembaga dicentang
+        // allowed_lembaga: batasi akses lembaga untuk role ini
         $allowedLembaga = null;
-        if (in_array('lembaga', $validated['permissions']) && $request->has('allowed_lembaga')) {
+        if ($request->has('allowed_lembaga') && !empty($request->input('allowed_lembaga'))) {
             $allowedLembaga = array_map('intval', $request->input('allowed_lembaga'));
         }
 

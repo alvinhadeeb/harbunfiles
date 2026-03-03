@@ -12,9 +12,29 @@ use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
 {
+    /**
+     * Ambil daftar lembaga yang boleh diakses admin saat ini
+     */
+    private function getAllowedLembagaIds(): ?array
+    {
+        $admin = auth()->guard('admin')->user();
+        return $admin ? $admin->getAllowedLembagaIds() : null;
+    }
+
     public function index(Request $request)
     {
-        $berita = Berita::with('lembagas')->orderByDesc('tanggal')->paginate(10);
+        $allowedLembaga = $this->getAllowedLembagaIds();
+
+        $query = Berita::with('lembagas')->orderByDesc('tanggal');
+
+        // Filter berita berdasarkan lembaga yang diizinkan
+        if ($allowedLembaga !== null) {
+            $query->whereHas('lembagas', function ($sub) use ($allowedLembaga) {
+                $sub->whereIn('lembaga.id', $allowedLembaga);
+            });
+        }
+
+        $berita = $query->paginate(10);
         // Simpan halaman terakhir di session
         session(['berita_last_page' => $request->get('page', 1)]);
         return view('minda.berita.index', compact('berita'));
@@ -23,7 +43,10 @@ class BeritaController extends Controller
     public function create()
     {
         $kategoriList = Kategori::orderBy('nama')->get();
-        $lembagaList = Lembaga::where('aktif', true)->orderBy('urutan')->get();
+        $allowedLembaga = $this->getAllowedLembagaIds();
+        $lembagaList = Lembaga::where('aktif', true)->orderBy('urutan')
+            ->when($allowedLembaga, fn($q) => $q->whereIn('id', $allowedLembaga))
+            ->get();
         return view('minda.berita.create', compact('kategoriList', 'lembagaList'));
     }
 
@@ -62,7 +85,10 @@ class BeritaController extends Controller
     {
         $berita = Berita::with('lembagas')->findOrFail($id);
         $kategoriList = Kategori::orderBy('nama')->get();
-        $lembagaList = Lembaga::where('aktif', true)->orderBy('urutan')->get();
+        $allowedLembaga = $this->getAllowedLembagaIds();
+        $lembagaList = Lembaga::where('aktif', true)->orderBy('urutan')
+            ->when($allowedLembaga, fn($q) => $q->whereIn('id', $allowedLembaga))
+            ->get();
         $selectedLembagas = $berita->lembagas->pluck('id')->toArray();
         return view('minda.berita.edit', compact('berita', 'kategoriList', 'lembagaList', 'selectedLembagas'));
     }

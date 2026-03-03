@@ -55,21 +55,22 @@
                 </div>
             </div>
 
-            @if(in_array('lembaga', $role->permissions ?? []))
+            @if(!empty($role->allowed_lembaga))
             <div class="mb-4">
                 <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Akses Lembaga</p>
-                @if(empty($role->allowed_lembaga))
-                    <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-medium">Semua Lembaga</span>
-                @else
-                    <div class="flex flex-wrap gap-1.5">
-                        @foreach($role->allowed_lembaga as $lmbId)
-                            @php $lmb = $lembagaMap[$lmbId] ?? null; @endphp
-                            @if($lmb)
-                            <span class="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-medium">{{ $lmb->nama }}</span>
-                            @endif
-                        @endforeach
-                    </div>
-                @endif
+                <div class="flex flex-wrap gap-1.5">
+                    @foreach($role->allowed_lembaga as $lmbId)
+                        @php $lmb = $lembagaMap[$lmbId] ?? null; @endphp
+                        @if($lmb)
+                        <span class="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-medium">{{ $lmb->nama }}</span>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+            @else
+            <div class="mb-4">
+                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Akses Lembaga</p>
+                <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-medium">Semua Lembaga</span>
             </div>
             @endif
 
