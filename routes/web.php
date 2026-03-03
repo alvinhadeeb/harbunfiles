@@ -98,6 +98,9 @@ Route::prefix($adminPrefix)->name('minda.')->group(function () {
             Route::resource('roles', App\Http\Controllers\Minda\AdminRoleController::class)->except(['show']);
             Route::get('favicon', [App\Http\Controllers\Minda\FaviconController::class, 'edit'])->name('favicon.edit');
             Route::put('favicon', [App\Http\Controllers\Minda\FaviconController::class, 'update'])->name('favicon.update');
+            Route::get('sidebar', [App\Http\Controllers\Minda\SidebarController::class, 'edit'])->name('sidebar.edit');
+            Route::put('sidebar', [App\Http\Controllers\Minda\SidebarController::class, 'update'])->name('sidebar.update');
+            Route::delete('sidebar/logo', [App\Http\Controllers\Minda\SidebarController::class, 'removeLogo'])->name('sidebar.logo.remove');
             Route::get('pengaturan', [App\Http\Controllers\Minda\SiteSettingController::class, 'index'])->name('pengaturan');
             Route::post('toggle-secret-register', [App\Http\Controllers\Minda\SiteSettingController::class, 'toggleSecretRegister'])->name('site-setting.toggle-secret-register');
             Route::put('update-admin-prefix', [App\Http\Controllers\Minda\SiteSettingController::class, 'updateAdminPrefix'])->name('site-setting.update-admin-prefix');

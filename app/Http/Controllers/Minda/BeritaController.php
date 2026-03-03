@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $berita = Berita::with('lembagas')->orderByDesc('tanggal')->paginate(10);
+        // Simpan halaman terakhir di session
+        session(['berita_last_page' => $request->get('page', 1)]);
         return view('minda.berita.index', compact('berita'));
     }
 
@@ -53,7 +55,7 @@ class BeritaController extends Controller
         // Sync lembaga (many-to-many)
         $berita->lembagas()->sync($lembagaIds);
 
-        return redirect()->route('minda.berita.index')->with('success', 'Berita berhasil ditambahkan');
+        return redirect()->route('minda.berita.index', ['page' => session('berita_last_page', 1)])->with('success', 'Berita berhasil ditambahkan');
     }
 
     public function edit(string $id)
@@ -98,7 +100,7 @@ class BeritaController extends Controller
         // Sync lembaga (many-to-many)
         $berita->lembagas()->sync($lembagaIds);
 
-        return redirect()->route('minda.berita.index')->with('success', 'Berita berhasil diupdate');
+        return redirect()->route('minda.berita.index', ['page' => session('berita_last_page', 1)])->with('success', 'Berita berhasil diupdate');
     }
 
     public function destroy(string $id)
@@ -111,6 +113,6 @@ class BeritaController extends Controller
         
         $berita->delete();
 
-        return redirect()->route('minda.berita.index')->with('success', 'Berita berhasil dihapus');
+        return redirect()->route('minda.berita.index', ['page' => session('berita_last_page', 1)])->with('success', 'Berita berhasil dihapus');
     }
 }

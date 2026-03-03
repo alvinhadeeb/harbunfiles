@@ -20,13 +20,18 @@
     <!-- Sidebar -->
     <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-900 to-indigo-900 text-white z-50 flex flex-col">
         <div class="p-6 pb-2 shrink-0">
+            @php $sidebarSetting = \App\Models\SiteSetting::getInstance(); @endphp
             <div class="flex items-center gap-3 mb-8">
-                <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center">
-                    <span class="text-blue-900 font-bold text-lg">HB</span>
-                </div>
+                @if($sidebarSetting->sidebar_logo)
+                    <img src="{{ asset('storage/' . $sidebarSetting->sidebar_logo) }}" alt="Logo" class="w-12 h-12 rounded-lg object-cover bg-white">
+                @else
+                    <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center">
+                        <span class="text-blue-900 font-bold text-lg">{{ strtoupper(substr($sidebarSetting->sidebar_title ?? 'AP', 0, 2)) }}</span>
+                    </div>
+                @endif
                 <div>
-                    <h2 class="font-bold text-lg">Admin Panel</h2>
-                    <p class="text-xs text-blue-200">Harapan Bunda</p>
+                    <h2 class="font-bold text-lg">{{ $sidebarSetting->sidebar_title ?? 'Admin Panel' }}</h2>
+                    <p class="text-xs text-blue-200">{{ $sidebarSetting->sidebar_subtitle ?? 'Harapan Bunda' }}</p>
                 </div>
             </div>
 
@@ -149,6 +154,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <span>Ganti Favicon</span>
+                    </a>
+                    <a href="{{ route('minda.sidebar.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition {{ request()->routeIs('minda.sidebar.*') ? 'bg-white/20' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                        </svg>
+                        <span>Edit Sidebar</span>
                     </a>
                     <a href="{{ route('minda.pengaturan') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition {{ request()->routeIs('minda.pengaturan') ? 'bg-white/20' : '' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
