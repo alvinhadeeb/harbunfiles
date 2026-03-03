@@ -45,34 +45,34 @@
             </div>
 
             <div class="mb-4">
-                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Permission</p>
-                <div class="flex flex-wrap gap-1.5">
-                    @foreach($role->permissions ?? [] as $perm)
-                        <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium">
-                            {{ $permissions[$perm]['label'] ?? ucfirst($perm) }}
-                        </span>
-                    @endforeach
-                </div>
+                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Akses Fitur</p>
+                @php
+                    $allPerms = array_keys($permissions);
+                    $rolePerms = $role->permissions ?? [];
+                    $isFullAccess = count(array_diff($allPerms, $rolePerms)) === 0;
+                @endphp
+                @if($isFullAccess)
+                    <span class="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm font-semibold">Semua Akses</span>
+                @else
+                    <span class="px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg text-sm font-semibold">Akses Terbatas</span>
+                @endif
             </div>
 
-            @if(!empty($role->allowed_lembaga))
             <div class="mb-4">
                 <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Akses Lembaga</p>
-                <div class="flex flex-wrap gap-1.5">
-                    @foreach($role->allowed_lembaga as $lmbId)
-                        @php $lmb = $lembagaMap[$lmbId] ?? null; @endphp
-                        @if($lmb)
-                        <span class="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-medium">{{ $lmb->nama }}</span>
-                        @endif
-                    @endforeach
-                </div>
+                @if(!empty($role->allowed_lembaga))
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach($role->allowed_lembaga as $lmbId)
+                            @php $lmb = $lembagaMap[$lmbId] ?? null; @endphp
+                            @if($lmb)
+                            <span class="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-medium">{{ $lmb->nama }}</span>
+                            @endif
+                        @endforeach
+                    </div>
+                @else
+                    <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-medium">Semua Lembaga</span>
+                @endif
             </div>
-            @else
-            <div class="mb-4">
-                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Akses Lembaga</p>
-                <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-medium">Semua Lembaga</span>
-            </div>
-            @endif
 
             <div class="flex items-center gap-2 pt-3 border-t border-gray-100">
                 <a href="{{ route('minda.roles.edit', $role->id) }}" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition text-sm font-medium flex items-center gap-1">

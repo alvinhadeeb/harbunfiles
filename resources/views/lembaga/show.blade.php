@@ -177,28 +177,25 @@
 <footer class="bg-gray-900 text-white py-16">
     <div class="container mx-auto px-4">
         <div class="grid md:grid-cols-3 gap-12">
-            <!-- Tentang -->
+            <!-- Tentang / Footer Lembaga -->
             <div>
                 <h3 class="text-2xl font-bold mb-6">TENTANG</h3>
-                <p class="text-gray-400 leading-relaxed">
-                    Yayasan Permata Hati Purwokerto awalnya bernama Yayasan Permata Hati yang didirikan pada tanggal 9 Agustus 1997. Sejak berdirinya, Yayasan Permata Hati memiliki kepedulian dalam bidang pendidikan dan sosial kemasyarakatan.
-                </p>
+                @if($lembaga->footer)
+                    <p class="text-gray-400 leading-relaxed">{!! nl2br(e($lembaga->footer)) !!}</p>
+                @elseif($lembaga->deskripsi)
+                    <p class="text-gray-400 leading-relaxed">{{ Str::limit(strip_tags($lembaga->deskripsi), 300) }}</p>
+                @else
+                    <p class="text-gray-400 leading-relaxed italic">Belum ada deskripsi.</p>
+                @endif
             </div>
 
             <!-- Lembaga -->
             <div>
                 <h3 class="text-2xl font-bold mb-6">LEMBAGA</h3>
                 <ul class="space-y-3">
-                    <li><a href="/lembaga/yayasan-permata-hati" class="text-gray-400 hover:text-white transition">&bull; Yayasan Permata Hati</a></li>
-                    <li><a href="/lembaga/lpit-harapan-bunda" class="text-gray-400 hover:text-white transition">&bull; LPIT Harapan Bunda</a></li>
-                    <li><a href="/lembaga/sukses-multi-sarana" class="text-gray-400 hover:text-white transition">&bull; Sukses Multi Sarana</a></li>
-                    <li><a href="/lembaga/tpa-baby-class-harapan-bunda" class="text-gray-400 hover:text-white transition">&bull; TPA Baby Class Harapan Bunda</a></li>
-                    <li><a href="/lembaga/kb-harapan-bunda" class="text-gray-400 hover:text-white transition">&bull; KB Harapan Bunda</a></li>
-                    <li><a href="/lembaga/tk-it-harapan-bunda" class="text-gray-400 hover:text-white transition">&bull; TK IT Harapan Bunda</a></li>
-                    <li><a href="/lembaga/sd-it-harapan-bunda-01" class="text-gray-400 hover:text-white transition">&bull; SD IT Harapan Bunda 01</a></li>
-                    <li><a href="/lembaga/sd-it-harapan-bunda-02" class="text-gray-400 hover:text-white transition">&bull; SD IT Harapan Bunda 02</a></li>
-                    <li><a href="/lembaga/smp-it-harapan-bunda" class="text-gray-400 hover:text-white transition">&bull; SMP IT Harapan Bunda</a></li>
-                    <li><a href="/lembaga/lembaga-wakaf-permata-hati-purwokerto" class="text-gray-400 hover:text-white transition">&bull; Lembaga Wakaf Permata Hati Purwokerto</a></li>
+                    @foreach($semuaLembaga as $lmb)
+                    <li><a href="/lembaga/{{ $lmb->slug }}" class="text-gray-400 hover:text-white transition {{ $lmb->id === $lembaga->id ? 'text-white font-semibold' : '' }}">&bull; {{ $lmb->nama }}</a></li>
+                    @endforeach
                 </ul>
             </div>
 
@@ -206,14 +203,30 @@
             <div>
                 <h3 class="text-2xl font-bold mb-6">KONTAK KAMI</h3>
                 <div class="space-y-4">
+                    @if($lembaga->footer_telepon)
                     <div class="flex justify-between">
                         <span class="text-gray-500 text-sm">Telepon</span>
-                        <span class="text-gray-400">0281623868</span>
+                        <span class="text-gray-400">{{ $lembaga->footer_telepon }}</span>
                     </div>
+                    @elseif($kontak && $kontak->telepon)
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 text-sm">Telepon</span>
+                        <span class="text-gray-400">{{ $kontak->telepon }}</span>
+                    </div>
+                    @endif
+
+                    @if($lembaga->footer_email)
                     <div class="flex justify-between">
                         <span class="text-gray-500 text-sm">Email</span>
-                        <span class="text-gray-400">lpitharbunpurwokerto@gmail.com</span>
+                        <span class="text-gray-400">{{ $lembaga->footer_email }}</span>
                     </div>
+                    @elseif($kontak && $kontak->email)
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 text-sm">Email</span>
+                        <span class="text-gray-400">{{ $kontak->email }}</span>
+                    </div>
+                    @endif
+
                     <div class="flex gap-4 mt-6">
                         @if($lembaga->facebook)
                         <a href="{{ $lembaga->facebook }}" target="_blank" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition">
@@ -245,8 +258,13 @@
                         @endif
                     </div>
                     <div class="mt-6">
+                        @if($lembaga->footer_alamat)
                         <p class="text-gray-500 text-sm mb-2 font-semibold">Alamat</p>
-                        <p class="text-gray-400">Jl. KH. Wahid Hasyim Gang Pesantren, RT.04/RW.01, Windusara, Karanglesesm, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah 53144</p>
+                        <p class="text-gray-400">{!! nl2br(e($lembaga->footer_alamat)) !!}</p>
+                        @elseif($kontak && $kontak->alamat)
+                        <p class="text-gray-500 text-sm mb-2 font-semibold">Alamat</p>
+                        <p class="text-gray-400">{!! nl2br(e($kontak->alamat)) !!}</p>
+                        @endif
                     </div>
                 </div>
             </div>

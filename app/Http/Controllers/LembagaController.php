@@ -25,7 +25,13 @@ class LembagaController extends Controller
         // Kategori berita
         $kategoriList = Kategori::orderBy('nama')->pluck('nama');
 
-        return view('lembaga.show', compact('lembaga', 'beritaTerbaru', 'kategoriList'));
+        // Semua lembaga aktif untuk footer
+        $semuaLembaga = Lembaga::where('aktif', true)->orderBy('urutan')->get();
+
+        // Kontak utama
+        $kontak = \App\Models\Kontak::first();
+
+        return view('lembaga.show', compact('lembaga', 'beritaTerbaru', 'kategoriList', 'semuaLembaga', 'kontak'));
     }
 }
 

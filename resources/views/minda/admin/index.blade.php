@@ -61,23 +61,26 @@
                     </td>
                     <td class="py-4 px-6 text-center">
                         @if($admin->isSuperAdmin())
-                            <span class="text-xs text-amber-600 font-medium">Semua Akses</span>
+                            <span class="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-semibold">Semua Akses</span>
                         @elseif($admin->admin_role_id && $admin->adminRole)
-                            <div class="flex flex-wrap justify-center gap-1">
-                                @foreach($admin->adminRole->permissions ?? [] as $p)
-                                    <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">{{ $permissions[$p]['label'] ?? ucfirst($p) }}</span>
-                                @endforeach
-                            </div>
+                            @php
+                                $allPerms = array_keys($permissions);
+                                $rolePerms = $admin->adminRole->permissions ?? [];
+                                $isFullAccess = count(array_diff($allPerms, $rolePerms)) === 0;
+                            @endphp
+                            @if($isFullAccess)
+                                <span class="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-semibold">Semua Akses</span>
+                            @else
+                                <span class="px-3 py-1 bg-orange-50 text-orange-700 rounded-lg text-xs font-semibold">Akses Terbatas</span>
+                            @endif
                         @else
                             @php $perms = $admin->permissions->pluck('permission')->toArray(); @endphp
-                            @if(count($perms) > 0)
-                                <div class="flex flex-wrap justify-center gap-1">
-                                    @foreach($perms as $p)
-                                        <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{{ ucfirst($p) }}</span>
-                                    @endforeach
-                                </div>
+                            @if(count($perms) === count(array_keys($permissions)))
+                                <span class="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-xs font-semibold">Semua Akses</span>
+                            @elseif(count($perms) > 0)
+                                <span class="px-3 py-1 bg-orange-50 text-orange-700 rounded-lg text-xs font-semibold">Akses Terbatas</span>
                             @else
-                                <span class="text-xs text-red-500">Tidak ada akses</span>
+                                <span class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-semibold">Tidak ada akses</span>
                             @endif
                         @endif
                     </td>
