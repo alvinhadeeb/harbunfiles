@@ -25,7 +25,7 @@ class SanitizeFileUpload
                 // 1. Check real MIME type (not just extension)
                 $realMime = $file->getMimeType();
                 $allowedMimes = [
-                    'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+                    'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/avif',
                 ];
                 
                 if (!in_array($realMime, $allowedMimes)) {

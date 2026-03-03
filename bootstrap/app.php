@@ -24,5 +24,49 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e, $request) {
+            // Skip untuk response JSON (API)
+            if ($request->expectsJson()) {
+                return null;
+            }
+
+            // Skip untuk error validasi (422) agar redirect back with errors tetap jalan
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
+
+            // Skip untuk redirect responses
+            if ($e instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                return null;
+            }
+
+            // Skip untuk 404 ModelNotFoundException (biar tetap 404)
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                return null;
+            }
+
+            // Skip untuk 404 NotFoundHttpException (halaman tidak ditemukan)
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                return null;
+            }
+
+            // Simpan detail bug ke cache
+            $bugId = \Illuminate\Support\Str::random(16);
+            $bugData = [
+                'code' => method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'time' => now()->format('d M Y H:i:s'),
+            ];
+            cache()->put("bug_{$bugId}", $bugData, now()->addHours(6));
+
+            $errorCode = $bugData['code'];
+
+            return response()->view('errors.custom', compact('bugId', 'errorCode'), $errorCode);
+        });
     })->create();

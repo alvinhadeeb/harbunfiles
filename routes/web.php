@@ -24,6 +24,19 @@ Route::get('/berita/{slug}', [App\Http\Controllers\BeritaPublicController::class
 
 Route::get('/faq', [App\Http\Controllers\FaqController::class, 'index'])->name('faq');
 
+// Bug detail - hanya admin yang login
+Route::get('/bug/{id}', function ($id) {
+    // Hanya admin yang login bisa lihat
+    if (!auth()->guard('admin')->check()) {
+        abort(403);
+    }
+    $bug = cache()->get("bug_{$id}");
+    if (!$bug) {
+        return redirect('/')->with('error', 'Bug report tidak ditemukan atau sudah expired.');
+    }
+    return view('errors.bug-detail', compact('bug'));
+})->name('bug.detail');
+
 // Secret admin register - URL rahasia (dinamis)
 $secretUrl = App\Models\SiteSetting::getSecretRegisterUrl();
 Route::get('/' . $secretUrl, [App\Http\Controllers\SecretRegisterController::class, 'showForm'])->name('mendoan');

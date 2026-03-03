@@ -66,31 +66,18 @@
             </div>
 
             <!-- Right Column - Sidebar -->
-            <div class="lg:w-80 flex-shrink-0">
+            <div class="lg:w-80 flex-shrink-0 space-y-8">
                 
                 <!-- Kategori Berita Card -->
-                <div class="rounded-2xl overflow-hidden shadow-lg mb-10 relative">
-                    <!-- Chevron pattern background -->
-                    <div class="absolute inset-0 opacity-5">
-                        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="chevrons" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                                    <path d="M0 20 L20 0 L40 20" fill="none" stroke="#000" stroke-width="1"/>
-                                    <path d="M0 40 L20 20 L40 40" fill="none" stroke="#000" stroke-width="1"/>
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#chevrons)"/>
-                        </svg>
-                    </div>
-                    
-                    <div class="relative z-10 p-8">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Kategori Berita</h3>
-                        
-                        <ul class="space-y-4">
+                <div class="relative rounded-2xl overflow-hidden p-6" style="background-image: url('{{ asset('images/background-perlembaga.png') }}'); background-size: cover; background-position: center;">
+                    <div class="absolute inset-0 bg-white/40"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-5">Kategori Berita</h3>
+                        <ul class="space-y-3">
                             @foreach($kategoriList as $kategori)
                             <li>
                                 <a href="{{ route('berita.index', ['kategori' => $kategori]) }}" 
-                                   class="text-gray-600 hover:text-gray-900 transition text-sm block py-1">
+                                   class="text-gray-700 hover:text-gray-900 transition text-sm block">
                                     {{ $kategori }}
                                 </a>
                             </li>
@@ -100,45 +87,33 @@
                 </div>
 
                 <!-- Informasi Terbaru -->
-                <div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Informasi Terbaru</h3>
-                    
-                    <div class="space-y-5">
-                        @forelse($beritaTerbaru as $terbaru)
-                        <a href="{{ route('berita.show', $terbaru->slug) }}" class="flex items-start gap-4 group">
-                            <div class="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden">
-                                @if($terbaru->gambar)
-                                <img src="{{ asset('storage/' . $terbaru->gambar) }}" 
-                                     alt="{{ $terbaru->judul }}" 
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                                @else
-                                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=200" 
-                                     alt="{{ $terbaru->judul }}" 
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                                @endif
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-700 font-semibold leading-snug group-hover:text-gray-900 transition line-clamp-3">
-                                    {{ $terbaru->judul }}
+                <div class="relative rounded-2xl overflow-hidden p-6" style="background-image: url('{{ asset('images/background-perlembaga.png') }}'); background-size: cover; background-position: center;">
+                    <div class="absolute inset-0 bg-white/40"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-5">Informasi Terbaru</h3>
+                        <div class="space-y-4">
+                            @php $sidebarImages = ['news1.png','news2.png','news3.png','news4.png','news5.png','news6.png','news7.jpeg']; @endphp
+                            @forelse($beritaTerbaru as $terbaru)
+                            <a href="{{ route('berita.show', $terbaru->slug) }}" class="flex items-center gap-3 group">
+                                <div class="w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                                    @if($terbaru->gambar)
+                                    <img src="{{ asset('storage/' . $terbaru->gambar) }}" 
+                                         alt="{{ $terbaru->judul }}" 
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    @else
+                                    <img src="{{ asset('images/' . $sidebarImages[$loop->index % count($sidebarImages)]) }}" 
+                                         alt="{{ $terbaru->judul }}" 
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    @endif
+                                </div>
+                                <p class="text-gray-700 text-xs font-semibold leading-snug group-hover:text-[#6E7098] transition flex-1">
+                                    {{ Str::limit($terbaru->judul, 60) }}
                                 </p>
-                            </div>
-                        </a>
-                        @empty
-                        @for($i = 0; $i < 5; $i++)
-                        <div class="flex items-start gap-4">
-                            <div class="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=200" 
-                                     alt="Berita" 
-                                     class="w-full h-full object-cover">
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-700 font-semibold leading-snug">
-                                    Komite SDIT Harapan Bunda Purwokerto Gelar Bakti Sosial
-                                </p>
-                            </div>
+                            </a>
+                            @empty
+                            <p class="text-gray-500 text-sm">Belum ada berita lain.</p>
+                            @endforelse
                         </div>
-                        @endfor
-                        @endforelse
                     </div>
                 </div>
             </div>
