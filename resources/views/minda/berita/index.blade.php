@@ -57,7 +57,7 @@
                             @endif
                         </td>
                         <td class="py-4 px-6">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">{{ $item->kategori }}</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium whitespace-nowrap">{{ trim($item->kategori) }}</span>
                         </td>
 
                         <td class="py-4 px-6 text-gray-600 text-sm">
