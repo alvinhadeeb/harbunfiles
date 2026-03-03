@@ -14,12 +14,14 @@
             <p class="text-gray-600">Kelola data lembaga yang tampil di halaman utama</p>
             <p class="text-xs text-gray-400 mt-1">Drag & drop untuk mengatur urutan. Yayasan Permata Hati selalu di atas (terkunci).</p>
         </div>
+        @if(empty($isRestricted))
         <a href="{{ route('minda.lembaga.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Tambah Lembaga
         </a>
+        @endif
     </div>
 
     {{-- Notifikasi simpan urutan --}}
@@ -113,11 +115,13 @@
                         </div>
                         <div class="w-36 flex items-center justify-end gap-2">
                             <a href="{{ route('minda.lembaga.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
-                            <form action="{{ route('minda.lembaga.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin hapus lembaga {{ $item->nama }}?')">
+                            @if(empty($isRestricted))
+                            <form action="{{ route('minda.lembaga.destroy', $item->id) }}" method="POST" data-confirm="Yakin hapus lembaga {{ $item->nama }}?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
                             </form>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -126,7 +130,9 @@
     @else
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
             <p class="text-gray-500 mb-4">Belum ada lembaga</p>
+            @if(empty($isRestricted))
             <a href="{{ route('minda.lembaga.create') }}" class="text-blue-600 hover:text-blue-800 font-medium">+ Tambah lembaga pertama</a>
+            @endif
         </div>
     @endif
 </div>

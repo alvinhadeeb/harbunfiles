@@ -53,7 +53,7 @@
                     </td>
                     <td class="px-6 py-4 text-right view-mode-{{ $item->id }}">
                         <button onclick="showEdit({{ $item->id }})" class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Edit</button>
-                        <form action="{{ route('minda.kategori.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus kategori ini?')">
+                        <form action="{{ route('minda.kategori.destroy', $item->id) }}" method="POST" class="inline" data-confirm="Yakin hapus kategori ini?">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>

@@ -39,7 +39,7 @@
                     {{-- Action Buttons --}}
                     <div class="border-t border-gray-100 px-5 py-3 bg-gray-50 flex items-center justify-end gap-2">
                         <a href="{{ route('minda.faq.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
-                        <form action="{{ route('minda.faq.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin hapus FAQ ini?')">
+                        <form action="{{ route('minda.faq.destroy', $item->id) }}" method="POST" data-confirm="Yakin hapus FAQ ini?">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>

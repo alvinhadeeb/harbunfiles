@@ -138,12 +138,39 @@
                         </svg>
                         <span>Kelola Admin</span>
                     </a>
+                    <a href="{{ route('minda.roles.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition {{ request()->routeIs('minda.roles.*') ? 'bg-white/20' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Kelola Role</span>
+                    </a>
                     <a href="{{ route('minda.favicon.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition {{ request()->routeIs('minda.favicon.*') ? 'bg-white/20' : '' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <span>Ganti Favicon</span>
                     </a>
+                    <a href="{{ route('minda.pengaturan') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition {{ request()->routeIs('minda.pengaturan') ? 'bg-white/20' : '' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Pengaturan</span>
+                    </a>
+                    @php 
+                        $siteSetting = \App\Models\SiteSetting::getInstance();
+                        $secretRegisterEnabled = $siteSetting->secret_register_enabled; 
+                    @endphp
+                    <form action="{{ route('minda.site-setting.toggle-secret-register') }}" method="POST" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+                        @csrf
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        <span class="flex-1 text-sm">/{{ $siteSetting->secret_register_url }}</span>
+                        <button type="submit" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $secretRegisterEnabled ? 'bg-green-500' : 'bg-gray-500' }}" title="{{ $secretRegisterEnabled ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan' }}">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $secretRegisterEnabled ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                        </button>
+                    </form>
                 </div>
                 @endif
 
@@ -165,7 +192,7 @@
                 <div class="flex-1">
                     <p class="text-sm font-semibold">{{ auth('admin')->user()->name }}</p>
                     <p class="text-xs {{ auth('admin')->user()->isSuperAdmin() ? 'text-amber-300' : 'text-blue-200' }}">
-                        {{ auth('admin')->user()->isSuperAdmin() ? '👑 Superadmin' : 'Admin' }}
+                        {{ auth('admin')->user()->isSuperAdmin() ? '👑 Superadmin' : auth('admin')->user()->role_label }}
                     </p>
                 </div>
             </div>
@@ -192,21 +219,152 @@
 
         <!-- Content -->
         <main class="p-8">
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             @yield('content')
         </main>
     </div>
+
+    {{-- Toast Notification --}}
+    <div id="toast" class="fixed top-6 right-6 z-[9999] pointer-events-none transition-all duration-500 translate-x-[120%] opacity-0">
+        <div id="toast-inner" class="pointer-events-auto max-w-sm w-full shadow-2xl rounded-xl overflow-hidden">
+            <div class="flex items-start gap-3 p-4">
+                <div id="toast-icon" class="shrink-0 mt-0.5"></div>
+                <div class="flex-1 min-w-0">
+                    <p id="toast-title" class="font-bold text-sm"></p>
+                    <p id="toast-msg" class="text-sm mt-0.5 opacity-90"></p>
+                </div>
+                <button onclick="hideToast()" class="shrink-0 p-1 rounded-lg hover:bg-black/10 transition">
+                    <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="toast-progress" class="h-1 rounded-full mx-4 mb-2 transition-all" style="width:100%"></div>
+        </div>
+    </div>
+
+    <script>
+    function showToast(type, message) {
+        const toast = document.getElementById('toast');
+        const inner = document.getElementById('toast-inner');
+        const icon = document.getElementById('toast-icon');
+        const title = document.getElementById('toast-title');
+        const msg = document.getElementById('toast-msg');
+        const progress = document.getElementById('toast-progress');
+
+        if (type === 'success') {
+            inner.className = 'pointer-events-auto max-w-sm w-full shadow-2xl rounded-xl overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 text-white';
+            icon.innerHTML = '<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>';
+            title.textContent = 'Berhasil!';
+            progress.className = 'h-1 rounded-full mx-4 mb-2 transition-all bg-white/30';
+        } else {
+            inner.className = 'pointer-events-auto max-w-sm w-full shadow-2xl rounded-xl overflow-hidden bg-gradient-to-r from-red-500 to-rose-600 text-white';
+            icon.innerHTML = '<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg></div>';
+            title.textContent = 'Gagal!';
+            progress.className = 'h-1 rounded-full mx-4 mb-2 transition-all bg-white/30';
+        }
+
+        msg.textContent = message;
+
+        // Show
+        toast.classList.remove('translate-x-[120%]', 'opacity-0');
+        toast.classList.add('translate-x-0', 'opacity-100');
+
+        // Animate progress
+        progress.style.width = '100%';
+        setTimeout(() => { progress.style.transition = 'width 4s linear'; progress.style.width = '0%'; }, 50);
+
+        // Auto hide after 4s
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(hideToast, 4000);
+    }
+
+    function hideToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('translate-x-[120%]', 'opacity-0');
+        toast.classList.remove('translate-x-0', 'opacity-100');
+    }
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () => showToast('success', @json(session('success'))));
+    @endif
+    @if(session('error'))
+        document.addEventListener('DOMContentLoaded', () => showToast('error', @json(session('error'))));
+    @endif
+    </script>
+
+    {{-- Confirm Modal --}}
+    <div id="confirmModal" class="fixed inset-0 z-[9999] hidden items-center justify-center">
+        <div id="confirmBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+        <div id="confirmBox" class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden transition-all duration-300 scale-90 opacity-0">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Konfirmasi Hapus</h3>
+                <p id="confirmMessage" class="text-gray-500 text-sm"></p>
+            </div>
+            <div class="flex border-t border-gray-100">
+                <button id="confirmCancel" class="flex-1 py-3.5 text-gray-600 font-semibold hover:bg-gray-50 transition text-sm">Batal</button>
+                <button id="confirmOk" class="flex-1 py-3.5 bg-red-500 text-white font-semibold hover:bg-red-600 transition text-sm">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let _confirmResolve = null;
+
+    function showConfirm(message) {
+        return new Promise(resolve => {
+            _confirmResolve = resolve;
+            document.getElementById('confirmMessage').textContent = message;
+            const modal = document.getElementById('confirmModal');
+            const backdrop = document.getElementById('confirmBackdrop');
+            const box = document.getElementById('confirmBox');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            requestAnimationFrame(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                box.classList.remove('scale-90', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            });
+        });
+    }
+
+    function closeConfirm(result) {
+        const modal = document.getElementById('confirmModal');
+        const backdrop = document.getElementById('confirmBackdrop');
+        const box = document.getElementById('confirmBox');
+
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0');
+        box.classList.remove('scale-100', 'opacity-100');
+        box.classList.add('scale-90', 'opacity-0');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+
+        if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+    }
+
+    document.getElementById('confirmCancel').addEventListener('click', () => closeConfirm(false));
+    document.getElementById('confirmOk').addEventListener('click', () => closeConfirm(true));
+    document.getElementById('confirmBackdrop').addEventListener('click', () => closeConfirm(false));
+
+    // Auto-attach to all forms with data-confirm
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('form[data-confirm]').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const ok = await showConfirm(this.dataset.confirm);
+                if (ok) this.submit();
+            });
+        });
+    });
+    </script>
 
     @stack('scripts')
 </body>

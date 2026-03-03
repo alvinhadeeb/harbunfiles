@@ -10,14 +10,47 @@ use Illuminate\Support\Str;
 
 class LembagaAdminController extends Controller
 {
+    /**
+     * Ambil daftar lembaga yang boleh diakses admin saat ini
+     */
+    private function getAllowedLembagaQuery()
+    {
+        $admin = auth()->guard('admin')->user();
+        $allowedIds = $admin->getAllowedLembagaIds();
+
+        $query = Lembaga::orderBy('urutan')->orderBy('nama');
+        if ($allowedIds !== null) {
+            $query->whereIn('id', $allowedIds);
+        }
+        return $query;
+    }
+
+    /**
+     * Cek apakah admin boleh akses lembaga tertentu
+     */
+    private function checkAccess(Lembaga $lembaga): void
+    {
+        $admin = auth()->guard('admin')->user();
+        if (!$admin->canAccessLembaga($lembaga->id)) {
+            abort(403, 'Anda tidak memiliki akses ke lembaga ini.');
+        }
+    }
+
     public function index()
     {
-        $lembaga = Lembaga::orderBy('urutan')->orderBy('nama')->get();
-        return view('minda.lembaga.index', compact('lembaga'));
+        $admin = auth()->guard('admin')->user();
+        $lembaga = $this->getAllowedLembagaQuery()->get();
+        $isRestricted = $admin->getAllowedLembagaIds() !== null;
+        return view('minda.lembaga.index', compact('lembaga', 'isRestricted'));
     }
 
     public function create()
     {
+        $admin = auth()->guard('admin')->user();
+        // Admin yang dibatasi lembaga-nya tidak boleh membuat lembaga baru
+        if ($admin->getAllowedLembagaIds() !== null) {
+            abort(403, 'Anda tidak memiliki akses untuk menambah lembaga baru.');
+        }
         return view('minda.lembaga.create');
     }
 
@@ -75,12 +108,14 @@ class LembagaAdminController extends Controller
     public function edit(string $id)
     {
         $lembaga = Lembaga::findOrFail($id);
+        $this->checkAccess($lembaga);
         return view('minda.lembaga.edit', compact('lembaga'));
     }
 
     public function update(Request $request, string $id)
     {
         $lembaga = Lembaga::findOrFail($id);
+        $this->checkAccess($lembaga);
 
         $validated = $request->validate([
             'nama' => 'required|max:255',
@@ -154,6 +189,13 @@ class LembagaAdminController extends Controller
     public function destroy(string $id)
     {
         $lembaga = Lembaga::findOrFail($id);
+        $this->checkAccess($lembaga);
+
+        // Admin yang dibatasi tidak boleh hapus lembaga
+        $admin = auth()->guard('admin')->user();
+        if ($admin->getAllowedLembagaIds() !== null) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus lembaga.');
+        }
 
         if ($lembaga->logo && !str_starts_with($lembaga->logo, 'images/')) {
             Storage::disk('public')->delete($lembaga->logo);

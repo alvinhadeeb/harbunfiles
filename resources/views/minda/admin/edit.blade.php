@@ -46,14 +46,14 @@
             </div>
 
             <div class="mb-5">
-                <label class="block text-gray-700 font-semibold mb-2">Role <span class="text-red-500">*</span></label>
+                <label class="block text-gray-700 font-semibold mb-2">Tipe <span class="text-red-500">*</span></label>
                 <div class="flex gap-4">
                     <label class="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
                         <input type="radio" name="role" value="admin" {{ old('role', $admin->role) == 'admin' ? 'checked' : '' }}
                             class="text-blue-600" onchange="togglePermissions()">
                         <div>
                             <span class="font-semibold text-gray-700">Admin</span>
-                            <p class="text-xs text-gray-500">Akses terbatas sesuai permission</p>
+                            <p class="text-xs text-gray-500">Akses sesuai role yang dipilih</p>
                         </div>
                     </label>
                     <label class="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
@@ -67,8 +67,48 @@
                 </div>
             </div>
 
+            <div id="roleSection" class="mb-5">
+                <label class="block text-gray-700 font-semibold mb-2">Role Admin</label>
+                @if($roles->count() > 0)
+                <div class="space-y-2">
+                    @foreach($roles as $role)
+                    <label class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-purple-400 has-[:checked]:bg-purple-50">
+                        <input type="radio" name="admin_role_id" value="{{ $role->id }}"
+                            {{ old('admin_role_id', $admin->admin_role_id) == $role->id ? 'checked' : '' }}
+                            class="mt-0.5 text-purple-600" onchange="toggleManualPermissions()">
+                        <div class="flex-1">
+                            <span class="font-semibold text-gray-700">{{ $role->name }}</span>
+                            @if($role->description)
+                                <p class="text-xs text-gray-500">{{ $role->description }}</p>
+                            @endif
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                @foreach($role->permissions ?? [] as $perm)
+                                    <span class="px-2 py-0.5 bg-purple-100 text-purple-600 rounded text-xs">{{ $permissions[$perm]['label'] ?? ucfirst($perm) }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    </label>
+                    @endforeach
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-gray-400 has-[:checked]:bg-gray-50">
+                        <input type="radio" name="admin_role_id" value=""
+                            {{ !old('admin_role_id', $admin->admin_role_id) ? 'checked' : '' }}
+                            class="text-gray-600" onchange="toggleManualPermissions()">
+                        <div>
+                            <span class="font-semibold text-gray-700">Custom (pilih permission manual)</span>
+                            <p class="text-xs text-gray-500">Atur permission satu per satu</p>
+                        </div>
+                    </label>
+                </div>
+                @else
+                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
+                    Belum ada role. <a href="{{ route('minda.roles.create') }}" class="text-purple-600 hover:text-purple-800 font-medium">Buat role baru</a> atau pilih permission manual di bawah.
+                </div>
+                <input type="hidden" name="admin_role_id" value="">
+                @endif
+            </div>
+
             <div id="permissionsSection" class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-3">Fitur yang Bisa Diakses</label>
+                <label class="block text-gray-700 font-semibold mb-3">Fitur yang Bisa Diakses (Custom)</label>
                 <div class="grid grid-cols-2 gap-3">
                     @foreach($permissions as $key => $perm)
                     <label class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-blue-400 has-[:checked]:bg-blue-50">
@@ -102,18 +142,36 @@
 <script>
 function togglePermissions() {
     const role = document.querySelector('input[name="role"]:checked').value;
-    const section = document.getElementById('permissionsSection');
+    const roleSection = document.getElementById('roleSection');
+    const permSection = document.getElementById('permissionsSection');
+
     if (role === 'superadmin') {
-        section.style.opacity = '0.4';
-        section.style.pointerEvents = 'none';
+        roleSection.style.display = 'none';
+        permSection.style.display = 'none';
     } else {
-        section.style.opacity = '1';
-        section.style.pointerEvents = 'auto';
+        roleSection.style.display = 'block';
+        toggleManualPermissions();
     }
 }
+
+function toggleManualPermissions() {
+    const permSection = document.getElementById('permissionsSection');
+    const selectedRole = document.querySelector('input[name="admin_role_id"]:checked');
+    const hasRole = selectedRole && selectedRole.value !== '';
+
+    if (hasRole) {
+        permSection.style.display = 'none';
+    } else {
+        permSection.style.display = 'block';
+    }
+}
+
 function selectAll(checked) {
     document.querySelectorAll('input[name="permissions[]"]').forEach(cb => cb.checked = checked);
 }
-document.addEventListener('DOMContentLoaded', togglePermissions);
+
+document.addEventListener('DOMContentLoaded', function() {
+    togglePermissions();
+});
 </script>
 @endsection

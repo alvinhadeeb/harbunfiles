@@ -5,19 +5,6 @@
 
 @section('content')
 <div class="max-w-5xl">
-    @if(session('success'))
-    <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-2">
-        <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-        {{ session('success') }}
-    </div>
-    @endif
-    @if(session('error'))
-    <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-2">
-        <svg class="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        {{ session('error') }}
-    </div>
-    @endif
-
     <div class="flex justify-between items-center mb-6">
         <p class="text-gray-600">Total: {{ $admins->count() }} admin</p>
         <a href="{{ route('minda.manage-admin.create') }}" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition shadow-lg flex items-center gap-2">
@@ -60,16 +47,27 @@
                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
                                 Superadmin
                             </span>
+                        @elseif($admin->admin_role_id && $admin->adminRole)
+                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                {{ $admin->adminRole->name }}
+                            </span>
                         @else
                             <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                Admin
+                                Admin (Custom)
                             </span>
                         @endif
                     </td>
                     <td class="py-4 px-6 text-center">
                         @if($admin->isSuperAdmin())
                             <span class="text-xs text-amber-600 font-medium">Semua Akses</span>
+                        @elseif($admin->admin_role_id && $admin->adminRole)
+                            <div class="flex flex-wrap justify-center gap-1">
+                                @foreach($admin->adminRole->permissions ?? [] as $p)
+                                    <span class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs">{{ $permissions[$p]['label'] ?? ucfirst($p) }}</span>
+                                @endforeach
+                            </div>
                         @else
                             @php $perms = $admin->permissions->pluck('permission')->toArray(); @endphp
                             @if(count($perms) > 0)
@@ -89,7 +87,7 @@
                                 Edit
                             </a>
                             @if($admin->id !== auth('admin')->id())
-                            <form action="{{ route('minda.manage-admin.destroy', $admin->id) }}" method="POST" onsubmit="return confirm('Hapus admin {{ $admin->name }}?')">
+                            <form action="{{ route('minda.manage-admin.destroy', $admin->id) }}" method="POST" data-confirm="Hapus admin {{ $admin->name }}?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm font-medium">

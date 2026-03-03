@@ -64,7 +64,7 @@
                                 <a href="{{ route('minda.berita.edit', $item->id) }}" class="px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition text-sm font-medium">
                                     Edit
                                 </a>
-                                <form action="{{ route('minda.berita.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus berita ini?')">
+                                <form action="{{ route('minda.berita.destroy', $item->id) }}" method="POST" data-confirm="Yakin ingin menghapus berita ini?">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm font-medium">

@@ -5,12 +5,6 @@
 
 @section('content')
 <div class="max-w-2xl">
-    @if(session('success'))
-        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="p-6 border-b border-gray-100">
             <h2 class="text-lg font-bold text-gray-800">Favicon Saat Ini</h2>

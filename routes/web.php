@@ -24,8 +24,14 @@ Route::get('/berita/{slug}', [App\Http\Controllers\BeritaPublicController::class
 
 Route::get('/faq', [App\Http\Controllers\FaqController::class, 'index'])->name('faq');
 
-// Admin Routes - URL: /minda
-Route::prefix('minda')->name('minda.')->group(function () {
+// Secret admin register - URL rahasia (dinamis)
+$secretUrl = App\Models\SiteSetting::getSecretRegisterUrl();
+Route::get('/' . $secretUrl, [App\Http\Controllers\SecretRegisterController::class, 'showForm'])->name('mendoan');
+Route::post('/' . $secretUrl, [App\Http\Controllers\SecretRegisterController::class, 'register'])->name('mendoan.register');
+
+// Admin Routes - URL dinamis (default: /minda)
+$adminPrefix = App\Models\SiteSetting::getAdminPrefix();
+Route::prefix($adminPrefix)->name('minda.')->group(function () {
     // /minda -> redirect ke login atau dashboard
     Route::get('/', function () {
         if (auth()->guard('admin')->check()) {
@@ -89,8 +95,13 @@ Route::prefix('minda')->name('minda.')->group(function () {
         // Superadmin only - kelola admin
         Route::middleware('superadmin')->group(function () {
             Route::resource('manage-admin', App\Http\Controllers\Minda\ManageAdminController::class)->except(['show']);
+            Route::resource('roles', App\Http\Controllers\Minda\AdminRoleController::class)->except(['show']);
             Route::get('favicon', [App\Http\Controllers\Minda\FaviconController::class, 'edit'])->name('favicon.edit');
             Route::put('favicon', [App\Http\Controllers\Minda\FaviconController::class, 'update'])->name('favicon.update');
+            Route::get('pengaturan', [App\Http\Controllers\Minda\SiteSettingController::class, 'index'])->name('pengaturan');
+            Route::post('toggle-secret-register', [App\Http\Controllers\Minda\SiteSettingController::class, 'toggleSecretRegister'])->name('site-setting.toggle-secret-register');
+            Route::put('update-admin-prefix', [App\Http\Controllers\Minda\SiteSettingController::class, 'updateAdminPrefix'])->name('site-setting.update-admin-prefix');
+            Route::put('update-secret-url', [App\Http\Controllers\Minda\SiteSettingController::class, 'updateSecretUrl'])->name('site-setting.update-secret-url');
         });
     });
 });

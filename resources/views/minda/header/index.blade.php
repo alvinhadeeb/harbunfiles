@@ -13,7 +13,7 @@
             <div class="flex items-center gap-4">
                 @if($headerSetting->logo)
                     <img src="{{ asset('storage/' . $headerSetting->logo) }}" alt="Logo Header" class="w-24 h-24 object-contain border border-gray-200 rounded-lg">
-                    <form action="{{ route('minda.header.logo.remove') }}" method="POST" class="inline" onsubmit="return confirm('Hapus foto/logo header? Logo default akan dipakai lagi.');">
+                    <form action="{{ route('minda.header.logo.remove') }}" method="POST" class="inline" data-confirm="Hapus foto/logo header? Logo default akan dipakai lagi.">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium text-sm hover:bg-red-200 transition">Hapus Foto</button>
@@ -86,7 +86,7 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                         <a href="{{ route('minda.header.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Edit</a>
-                        <form action="{{ route('minda.header.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus menu ini?')">
+                        <form action="{{ route('minda.header.destroy', $item->id) }}" method="POST" class="inline" data-confirm="Yakin hapus menu ini?">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>

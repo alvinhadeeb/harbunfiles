@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\AdminPermission;
+use App\Models\AdminRole;
 use Illuminate\Support\Facades\Hash;
 
 class ManageAdminController extends Controller
@@ -15,8 +16,9 @@ class ManageAdminController extends Controller
      */
     public function index()
     {
-        $admins = Admin::with('permissions')->orderBy('role', 'desc')->orderBy('name')->get();
-        return view('minda.admin.index', compact('admins'));
+        $admins = Admin::with(['permissions', 'adminRole'])->orderBy('role', 'desc')->orderBy('name')->get();
+        $permissions = AdminPermission::availablePermissions();
+        return view('minda.admin.index', compact('admins', 'permissions'));
     }
 
     /**
@@ -25,7 +27,8 @@ class ManageAdminController extends Controller
     public function create()
     {
         $permissions = AdminPermission::availablePermissions();
-        return view('minda.admin.create', compact('permissions'));
+        $roles = AdminRole::orderBy('name')->get();
+        return view('minda.admin.create', compact('permissions', 'roles'));
     }
 
     /**
@@ -38,6 +41,7 @@ class ManageAdminController extends Controller
             'email' => 'required|email|unique:admins,email',
             'password' => 'required|min:8|confirmed',
             'role' => 'required|in:admin,superadmin',
+            'admin_role_id' => 'nullable|exists:admin_roles,id',
             'permissions' => 'nullable|array',
             'permissions.*' => 'in:' . implode(',', array_keys(AdminPermission::availablePermissions())),
         ]);
@@ -47,10 +51,11 @@ class ManageAdminController extends Controller
             'email' => $validated['email'],
             'password' => $validated['password'],
             'role' => $validated['role'],
+            'admin_role_id' => $validated['role'] === 'admin' ? ($validated['admin_role_id'] ?? null) : null,
         ]);
 
-        // Kalau role admin, simpan permissions yang dipilih
-        if ($validated['role'] === 'admin' && !empty($validated['permissions'])) {
+        // Kalau role admin dan TIDAK pakai admin_role, simpan permissions manual
+        if ($validated['role'] === 'admin' && empty($validated['admin_role_id']) && !empty($validated['permissions'])) {
             foreach ($validated['permissions'] as $perm) {
                 $admin->permissions()->create(['permission' => $perm]);
             }
@@ -64,9 +69,10 @@ class ManageAdminController extends Controller
      */
     public function edit(string $id)
     {
-        $admin = Admin::with('permissions')->findOrFail($id);
+        $admin = Admin::with(['permissions', 'adminRole'])->findOrFail($id);
         $permissions = AdminPermission::availablePermissions();
         $adminPermissions = $admin->permissions()->pluck('permission')->toArray();
+        $roles = AdminRole::orderBy('name')->get();
 
         // Superadmin tidak bisa edit diri sendiri dari halaman ini
         if ($admin->id === auth('admin')->id() && $admin->isSuperAdmin()) {
@@ -74,7 +80,7 @@ class ManageAdminController extends Controller
                 ->with('error', 'Gunakan halaman Profil untuk edit akun Anda sendiri.');
         }
 
-        return view('minda.admin.edit', compact('admin', 'permissions', 'adminPermissions'));
+        return view('minda.admin.edit', compact('admin', 'permissions', 'adminPermissions', 'roles'));
     }
 
     /**
@@ -89,6 +95,7 @@ class ManageAdminController extends Controller
             'email' => 'required|email|unique:admins,email,' . $admin->id,
             'password' => 'nullable|min:8|confirmed',
             'role' => 'required|in:admin,superadmin',
+            'admin_role_id' => 'nullable|exists:admin_roles,id',
             'permissions' => 'nullable|array',
             'permissions.*' => 'in:' . implode(',', array_keys(AdminPermission::availablePermissions())),
         ]);
@@ -96,6 +103,7 @@ class ManageAdminController extends Controller
         $admin->name = $validated['name'];
         $admin->email = $validated['email'];
         $admin->role = $validated['role'];
+        $admin->admin_role_id = $validated['role'] === 'admin' ? ($validated['admin_role_id'] ?? null) : null;
 
         if (!empty($validated['password'])) {
             $admin->password = $validated['password'];
@@ -103,9 +111,9 @@ class ManageAdminController extends Controller
 
         $admin->save();
 
-        // Update permissions
+        // Update permissions manual
         $admin->permissions()->delete();
-        if ($validated['role'] === 'admin' && !empty($validated['permissions'])) {
+        if ($validated['role'] === 'admin' && empty($validated['admin_role_id']) && !empty($validated['permissions'])) {
             foreach ($validated['permissions'] as $perm) {
                 $admin->permissions()->create(['permission' => $perm]);
             }

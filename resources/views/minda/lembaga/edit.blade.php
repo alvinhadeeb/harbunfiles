@@ -10,12 +10,6 @@
         Kembali ke Daftar Lembaga
     </a>
 
-    @if(session('success'))
-    <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-2">
-        <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-        {{ session('success') }}
-    </div>
-    @endif
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <form id="lembagaForm" action="{{ route('minda.lembaga.update', $lembaga->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
