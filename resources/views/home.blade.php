@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- Hero: full-width banner + carousel dots --}}
-    <section class="relative w-full overflow-hidden">
+    <section class="relative w-full overflow-hidden" id="hero-section">
         <div class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[200px] bg-gray-200">
             @if($bannerList->count() > 0)
                 @php $firstBanner = $bannerList->first(); @endphp
@@ -13,6 +13,15 @@
                 <img id="hero-img" src="{{ asset('images/news1.png') }}" alt="Banner" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" />
             @endif
         </div>
+        {{-- Tombol navigasi kiri/kanan (tampil di mobile) --}}
+        @if($bannerList->count() > 1)
+        <button id="hero-prev" class="md:hidden absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all" aria-label="Banner sebelumnya">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button id="hero-next" class="md:hidden absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all" aria-label="Banner berikutnya">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        @endif
         <div class="absolute bottom-4 left-1/2 flex gap-2" style="transform: translateX(-50%);" id="hero-dots">
         </div>
     </section>
@@ -23,15 +32,19 @@
                 '{{ str_starts_with($banner->gambar, "images/") ? asset($banner->gambar) : asset("storage/" . $banner->gambar) }}',
             @endforeach
         ];
+        if (heroImages.length <= 1) return;
+
         var heroIdx = 0;
         var heroImg = document.getElementById('hero-img');
+        var heroSection = document.getElementById('hero-section');
         var dotsContainer = document.getElementById('hero-dots');
+        var autoplayTimer;
 
         // Create dots
         heroImages.forEach(function(_, i) {
             var dot = document.createElement('span');
             dot.className = 'w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ' + (i === 0 ? 'bg-white shadow scale-125' : 'bg-gray-300');
-            dot.addEventListener('click', function() { goToHero(i); });
+            dot.addEventListener('click', function() { goToHero(i); resetAutoplay(); });
             dotsContainer.appendChild(dot);
         });
 
@@ -52,15 +65,68 @@
             }, 300);
         }
 
-        setInterval(function() {
-            heroIdx = (heroIdx + 1) % heroImages.length;
-            heroImg.style.opacity = '0';
-            setTimeout(function() {
-                heroImg.src = heroImages[heroIdx];
-                heroImg.style.opacity = '1';
-                updateDots();
-            }, 300);
-        }, 5000);
+        function goNext() {
+            goToHero((heroIdx + 1) % heroImages.length);
+        }
+
+        function goPrev() {
+            goToHero((heroIdx - 1 + heroImages.length) % heroImages.length);
+        }
+
+        // Autoplay
+        function startAutoplay() {
+            autoplayTimer = setInterval(goNext, 5000);
+        }
+        function resetAutoplay() {
+            clearInterval(autoplayTimer);
+            startAutoplay();
+        }
+        startAutoplay();
+
+        // Tombol navigasi
+        var prevBtn = document.getElementById('hero-prev');
+        var nextBtn = document.getElementById('hero-next');
+        if (prevBtn) prevBtn.addEventListener('click', function() { goPrev(); resetAutoplay(); });
+        if (nextBtn) nextBtn.addEventListener('click', function() { goNext(); resetAutoplay(); });
+
+        // Touch swipe support (mobile)
+        var touchStartX = 0;
+        var touchEndX = 0;
+        var touchStartY = 0;
+        var touchEndY = 0;
+        var isSwiping = false;
+
+        heroSection.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            isSwiping = true;
+        }, { passive: true });
+
+        heroSection.addEventListener('touchmove', function(e) {
+            if (!isSwiping) return;
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        heroSection.addEventListener('touchend', function(e) {
+            if (!isSwiping) return;
+            isSwiping = false;
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+
+            var diffX = touchStartX - touchEndX;
+            var diffY = Math.abs(touchStartY - touchEndY);
+
+            // Minimal swipe 50px horizontal, dan lebih dominan horizontal dari vertikal
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > diffY) {
+                if (diffX > 0) {
+                    goNext(); // Swipe kiri = next
+                } else {
+                    goPrev(); // Swipe kanan = prev
+                }
+                resetAutoplay();
+            }
+        }, { passive: true });
     })();
     </script>
 
