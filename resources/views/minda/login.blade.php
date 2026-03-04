@@ -14,9 +14,10 @@
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus {
-            -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.08) inset !important;
-            -webkit-text-fill-color: #fff !important;
-            caret-color: #fff;
+            -webkit-box-shadow: 0 0 0 1000px rgba(30, 27, 75, 0.95) inset !important;
+            -webkit-text-fill-color: #ffffff !important;
+            caret-color: #ffffff;
+            transition: background-color 5000s ease-in-out 0s;
         }
     </style>
 </head>
