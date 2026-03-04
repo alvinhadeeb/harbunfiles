@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AdminRole extends Model
 {
-    protected $fillable = ['name', 'description', 'permissions', 'allowed_lembaga'];
+    protected $fillable = ['name', 'description', 'permissions', 'allowed_lembaga', 'sidebar_color'];
 
     protected $casts = [
         'permissions' => 'array',

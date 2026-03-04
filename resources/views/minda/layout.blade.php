@@ -18,7 +18,25 @@
 </head>
 <body class="bg-gray-50">
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-900 to-indigo-900 text-white z-50 flex flex-col">
+    @php
+    $sidebarColors = [
+        'red' => ['from' => '#7f1d1d', 'to' => '#991b1b'],
+        'green' => ['from' => '#14532d', 'to' => '#166534'],
+        'purple' => ['from' => '#4c1d95', 'to' => '#5b21b6'],
+        'orange' => ['from' => '#7c2d12', 'to' => '#9a3412'],
+        'teal' => ['from' => '#134e4a', 'to' => '#115e59'],
+        'pink' => ['from' => '#831843', 'to' => '#9d174d'],
+        'slate' => ['from' => '#1e293b', 'to' => '#334155'],
+        'cyan' => ['from' => '#164e63', 'to' => '#155e75'],
+        'amber' => ['from' => '#78350f', 'to' => '#92400e'],
+    ];
+    // Prioritas: admin personal > role > default
+    $adminSidebarColor = auth('admin')->user()?->sidebar_color 
+        ?? auth('admin')->user()?->adminRole?->sidebar_color;
+    $sbFrom = $sidebarColors[$adminSidebarColor]['from'] ?? null;
+    $sbTo = $sidebarColors[$adminSidebarColor]['to'] ?? null;
+    @endphp
+    <div class="fixed inset-y-0 left-0 w-64 text-white z-50 flex flex-col" style="background: linear-gradient(to bottom, {{ $sbFrom ?? '#1e3a8a' }}, {{ $sbTo ?? '#312e81' }});">
         <div class="p-6 pb-2 shrink-0">
             @php $sidebarSetting = \App\Models\SiteSetting::getInstance(); @endphp
             <div class="flex items-center gap-3 mb-8">
@@ -36,7 +54,7 @@
             </div>
 
         </div>
-        <nav class="flex-1 overflow-y-auto hide-scrollbar px-6 pb-4 space-y-2">
+        <nav id="sidebar-nav" class="flex-1 overflow-y-auto hide-scrollbar px-6 pb-4 space-y-2">
                 <a href="{{ route('minda.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition {{ request()->routeIs('minda.dashboard') ? 'bg-white/20' : '' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -364,5 +382,17 @@
     </script>
 
     @stack('scripts')
+
+    <script>
+    (function() {
+        const nav = document.getElementById('sidebar-nav');
+        if (!nav) return;
+        const saved = sessionStorage.getItem('sidebar-scroll');
+        if (saved) nav.scrollTop = parseInt(saved);
+        nav.addEventListener('scroll', function() {
+            sessionStorage.setItem('sidebar-scroll', nav.scrollTop);
+        });
+    })();
+    </script>
 </body>
 </html>

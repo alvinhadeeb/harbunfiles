@@ -49,4 +49,22 @@ class ProfilAdminController extends Controller
 
         return redirect()->route('minda.profil.edit')->with('success', 'Password berhasil diubah');
     }
+
+    public function updateSidebarColor(Request $request)
+    {
+        $admin = auth()->guard('admin')->user();
+
+        $allowed = ['', 'red', 'green', 'purple', 'orange', 'teal', 'pink', 'slate', 'cyan', 'amber'];
+        $color = $request->input('sidebar_color', '');
+
+        if (!in_array($color, $allowed)) {
+            $color = null;
+        }
+
+        $admin->update([
+            'sidebar_color' => $color ?: null,
+        ]);
+
+        return redirect()->route('minda.profil.edit')->with('success', 'Warna sidebar berhasil diubah!');
+    }
 }

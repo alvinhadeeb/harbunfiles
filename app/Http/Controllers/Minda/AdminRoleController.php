@@ -59,6 +59,7 @@ class AdminRoleController extends Controller
             'description' => $validated['description'] ?? null,
             'permissions' => $validated['permissions'],
             'allowed_lembaga' => $allowedLembaga,
+            'sidebar_color' => $request->input('sidebar_color') ?: null,
         ]);
 
         return redirect()->route('minda.roles.index')->with('success', 'Role "' . $validated['name'] . '" berhasil dibuat.');
@@ -105,6 +106,7 @@ class AdminRoleController extends Controller
             'description' => $validated['description'] ?? null,
             'permissions' => $validated['permissions'],
             'allowed_lembaga' => $allowedLembaga,
+            'sidebar_color' => $request->input('sidebar_color') ?: null,
         ]);
 
         return redirect()->route('minda.roles.index')->with('success', 'Role "' . $role->name . '" berhasil diupdate.');

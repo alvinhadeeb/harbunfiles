@@ -104,6 +104,7 @@ Route::prefix($adminPrefix)->name('minda.')->group(function () {
         Route::get('/profil', [App\Http\Controllers\Minda\ProfilAdminController::class, 'edit'])->name('profil.edit');
         Route::put('/profil', [App\Http\Controllers\Minda\ProfilAdminController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [App\Http\Controllers\Minda\ProfilAdminController::class, 'updatePassword'])->name('profil.password');
+        Route::put('/profil/sidebar-color', [App\Http\Controllers\Minda\ProfilAdminController::class, 'updateSidebarColor'])->name('profil.sidebar-color');
 
         // Superadmin only - kelola admin
         Route::middleware('superadmin')->group(function () {
