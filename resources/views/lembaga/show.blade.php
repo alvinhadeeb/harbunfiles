@@ -107,6 +107,20 @@
     </div>
 </div>
 
+<!-- Informasi Selengkapnya -->
+@if($lembaga->linktree)
+<div class="py-10 md:py-14" style="background-color: #8d8bb8;">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">Informasi Selengkapnya</h2>
+        <p class="text-white/80 mb-6 text-sm md:text-base">Kunjungi halaman resmi {{ $lembaga->nama }} untuk mendapatkan informasi lebih lengkap.</p>
+        <a href="{{ $lembaga->linktree }}" target="_blank" rel="noopener noreferrer"
+           class="inline-block px-8 py-3.5 bg-white text-gray-700 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+            Kunjungi Sekarang
+        </a>
+    </div>
+</div>
+@endif
+
 <!-- Berita Terbaru Section -->
 @if($beritaTerbaru->count())
 <div class="bg-white py-10 md:py-16">

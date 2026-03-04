@@ -8,10 +8,11 @@ class SiteSetting extends Model
 {
     protected $table = 'site_settings';
 
-    protected $fillable = ['secret_register_enabled', 'admin_prefix', 'secret_register_url', 'sidebar_title', 'sidebar_subtitle', 'sidebar_logo'];
+    protected $fillable = ['secret_register_enabled', 'admin_prefix', 'secret_register_url', 'sidebar_title', 'sidebar_subtitle', 'sidebar_logo', 'admin_gate_enabled', 'admin_gate_code'];
 
     protected $casts = [
         'secret_register_enabled' => 'boolean',
+        'admin_gate_enabled' => 'boolean',
     ];
 
     /**

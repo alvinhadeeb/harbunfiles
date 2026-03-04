@@ -89,4 +89,38 @@ class SiteSettingController extends Controller
 
         return redirect()->back()->with('success', 'URL registrasi rahasia berhasil diubah menjadi /' . $setting->secret_register_url);
     }
+
+    /**
+     * Toggle on/off admin gate (kode rahasia sebelum login)
+     */
+    public function toggleAdminGate()
+    {
+        $setting = SiteSetting::getInstance();
+        $setting->admin_gate_enabled = !$setting->admin_gate_enabled;
+        $setting->save();
+
+        $status = $setting->admin_gate_enabled ? 'diaktifkan' : 'dinonaktifkan';
+
+        return redirect()->back()->with('success', "Kode rahasia admin berhasil {$status}.");
+    }
+
+    /**
+     * Update kode rahasia admin gate
+     */
+    public function updateAdminGateCode(Request $request)
+    {
+        $validated = $request->validate([
+            'admin_gate_code' => ['required', 'string', 'min:2', 'max:50'],
+        ], [
+            'admin_gate_code.required' => 'Kode rahasia wajib diisi.',
+            'admin_gate_code.min' => 'Kode rahasia minimal 2 karakter.',
+            'admin_gate_code.max' => 'Kode rahasia maksimal 50 karakter.',
+        ]);
+
+        $setting = SiteSetting::getInstance();
+        $setting->admin_gate_code = $validated['admin_gate_code'];
+        $setting->save();
+
+        return redirect()->back()->with('success', 'Kode rahasia admin berhasil diperbarui.');
+    }
 }

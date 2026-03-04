@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminAuth::class,
+            'admin.gate' => \App\Http\Middleware\AdminGate::class,
             'login.ratelimit' => \App\Http\Middleware\LoginRateLimiter::class,
             'sanitize.upload' => \App\Http\Middleware\SanitizeFileUpload::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,

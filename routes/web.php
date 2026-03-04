@@ -45,6 +45,53 @@ Route::post('/' . $secretUrl, [App\Http\Controllers\SecretRegisterController::cl
 // Admin Routes - URL dinamis (default: /minda)
 $adminPrefix = App\Models\SiteSetting::getAdminPrefix();
 Route::prefix($adminPrefix)->name('minda.')->group(function () {
+    // Gate - kode rahasia sebelum login
+    Route::get('/gate', function () {
+        // Jika sudah login, langsung ke dashboard
+        if (auth()->guard('admin')->check()) {
+            return redirect()->route('minda.dashboard');
+        }
+        // Jika gate tidak aktif, langsung ke login
+        $setting = App\Models\SiteSetting::getInstance();
+        if (!$setting->admin_gate_enabled) {
+            return redirect()->route('minda.login');
+        }
+        // Jika sudah melewati gate
+        if (session('admin_gate_passed')) {
+            return redirect()->route('minda.login');
+        }
+        // Jika sudah 3x salah, langsung redirect ke beranda (fallback server-side)
+        if (session('gate_attempts', 0) >= 3) {
+            session()->forget(['gate_attempts', 'admin_gate_passed']);
+            return redirect('/');
+        }
+        return view('minda.gate');
+    })->name('gate');
+
+    Route::post('/gate', function (Illuminate\Http\Request $request) {
+        $setting = App\Models\SiteSetting::getInstance();
+        $code = $request->input('gate_code', '');
+        $attempts = session('gate_attempts', 0);
+
+        if ($code === $setting->admin_gate_code) {
+            // Kode benar
+            session()->forget('gate_attempts');
+            session(['admin_gate_passed' => true]);
+            return redirect()->route('minda.login');
+        }
+
+        // Kode salah
+        $attempts++;
+        session(['gate_attempts' => $attempts]);
+
+        if ($attempts >= 3) {
+            // Jangan hapus gate_attempts dulu, biar view bisa baca untuk countdown JS
+            return redirect()->route('minda.gate')->with('gate_error', 'Terlalu banyak percobaan salah. Anda akan dialihkan...');
+        }
+
+        return redirect()->route('minda.gate')->with('gate_error', 'Kode salah. Percobaan ' . $attempts . ' dari 3.');
+    });
+
     // /minda -> redirect ke login atau dashboard
     Route::get('/', function () {
         if (auth()->guard('admin')->check()) {
@@ -53,8 +100,8 @@ Route::prefix($adminPrefix)->name('minda.')->group(function () {
         return redirect()->route('minda.login');
     })->name('index');
 
-    // Guest routes (belum login)
-    Route::middleware('guest:admin')->group(function () {
+    // Guest routes (belum login) - dilindungi gate
+    Route::middleware(['guest:admin', 'admin.gate'])->group(function () {
         Route::get('/login', [App\Http\Controllers\Minda\AuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [App\Http\Controllers\Minda\AuthController::class, 'login'])->middleware('login.ratelimit');
     });
@@ -119,6 +166,8 @@ Route::prefix($adminPrefix)->name('minda.')->group(function () {
             Route::post('toggle-secret-register', [App\Http\Controllers\Minda\SiteSettingController::class, 'toggleSecretRegister'])->name('site-setting.toggle-secret-register');
             Route::put('update-admin-prefix', [App\Http\Controllers\Minda\SiteSettingController::class, 'updateAdminPrefix'])->name('site-setting.update-admin-prefix');
             Route::put('update-secret-url', [App\Http\Controllers\Minda\SiteSettingController::class, 'updateSecretUrl'])->name('site-setting.update-secret-url');
+            Route::post('toggle-admin-gate', [App\Http\Controllers\Minda\SiteSettingController::class, 'toggleAdminGate'])->name('site-setting.toggle-admin-gate');
+            Route::put('update-admin-gate', [App\Http\Controllers\Minda\SiteSettingController::class, 'updateAdminGateCode'])->name('site-setting.update-admin-gate');
         });
     });
 });
