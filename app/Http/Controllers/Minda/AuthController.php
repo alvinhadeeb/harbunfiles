@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Admin;
+use App\Models\SiteSetting;
 
 class AuthController extends Controller
 {
@@ -15,6 +16,13 @@ class AuthController extends Controller
         if (Auth::guard('admin')->check()) {
             return redirect()->route('minda.dashboard');
         }
+
+        // Paksa gate check — biar tidak bisa bypass
+        $setting = SiteSetting::getInstance();
+        if ($setting->admin_gate_enabled && !session('admin_gate_passed')) {
+            return redirect()->route('minda.gate');
+        }
+
         return view('minda.login');
     }
 

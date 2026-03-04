@@ -92,10 +92,15 @@ Route::prefix($adminPrefix)->name('minda.')->group(function () {
         return redirect()->route('minda.gate')->with('gate_error', 'Kode salah. Percobaan ' . $attempts . ' dari 3.');
     });
 
-    // /minda -> redirect ke login atau dashboard
+    // /minda -> redirect ke login, dashboard, atau gate
     Route::get('/', function () {
         if (auth()->guard('admin')->check()) {
             return redirect()->route('minda.dashboard');
+        }
+        // Cek gate aktif & belum lolos
+        $setting = App\Models\SiteSetting::getInstance();
+        if ($setting->admin_gate_enabled && !session('admin_gate_passed')) {
+            return redirect()->route('minda.gate');
         }
         return redirect()->route('minda.login');
     })->name('index');
