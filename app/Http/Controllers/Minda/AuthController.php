@@ -72,6 +72,11 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
+        // Redirect ke gate jika aktif, bukan ke login
+        $setting = SiteSetting::getInstance();
+        if ($setting->admin_gate_enabled) {
+            return redirect()->route('minda.gate');
+        }
         return redirect()->route('minda.login');
     }
 }
