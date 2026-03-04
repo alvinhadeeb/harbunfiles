@@ -108,6 +108,7 @@
 </div>
 
 <!-- Berita Terbaru Section -->
+@if($beritaTerbaru->count())
 <div class="bg-white py-10 md:py-16">
     <div class="max-w-6xl mx-auto px-4">
         <h2 class="text-2xl md:text-4xl font-bold text-center text-gray-800 mb-3">BERITA {{ strtoupper($lembaga->nama) }}</h2>
@@ -133,7 +134,7 @@
                 </style>
                 <script>document.currentScript.previousElementSibling.parentElement.classList.add('berita-lembaga-grid');</script>
                 @php $homeNewsImages = ['news1.png','news2.png','news3.png','news4.png','news5.png','news6.png','news7.jpeg']; @endphp
-                @forelse($beritaTerbaru->take(3) as $brt)
+                @foreach($beritaTerbaru->take(3) as $brt)
                     <a href="{{ route('berita.show', $brt->slug) }}" class="relative overflow-hidden rounded-2xl bg-gray-100 group" style="aspect-ratio: 4/3; box-shadow: 0 2px 14px rgba(0,0,0,0.08);">
                         @if($brt->gambar)
                         <img src="{{ asset('storage/' . $brt->gambar) }}" alt="{{ $brt->judul }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -149,21 +150,7 @@
                             </p>
                         </div>
                     </a>
-                @empty
-                    @foreach([1, 2, 3] as $i)
-                    <article class="relative overflow-hidden rounded-2xl bg-gray-100" style="aspect-ratio: 4/3; box-shadow: 0 2px 14px rgba(0,0,0,0.08);">
-                        <img src="{{ asset('images/news' . $i . '.png') }}" alt="" class="absolute inset-0 w-full h-full object-cover" />
-                        <div class="absolute inset-0 bg-black/40"></div>
-                        <div class="absolute left-0 bottom-0 p-4">
-                            <h4 class="font-bold text-white uppercase text-base md:text-lg mb-1" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);">JUDUL BERITA</h4>
-                            <p class="text-white text-sm flex items-center gap-1.5" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);">
-                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                1 January 2026
-                            </p>
-                        </div>
-                    </article>
-                    @endforeach
-                @endforelse
+                @endforeach
                 <a href="{{ route('berita.index', ['lembaga' => $lembaga->id]) }}" class="flex flex-col items-center justify-center rounded-2xl text-white font-medium text-center p-6 transition hover:opacity-90 hover:shadow-xl duration-300 group" style="aspect-ratio: 4/3; background-color: #8280af; box-shadow: 0 2px 14px rgba(0,0,0,0.08);">
                     <span class="block text-2xl font-bold leading-snug group-hover:scale-105 transition-transform">Tampilkan</span>
                     <span class="block text-2xl font-bold leading-snug group-hover:scale-105 transition-transform">semua berita</span>
@@ -172,6 +159,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <!-- Footer -->
 <footer class="bg-gray-900 text-white py-16">
