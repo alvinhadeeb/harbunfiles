@@ -5,68 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .login-card { animation: fadeIn 0.6s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.97); }
-            to { opacity: 1; transform: scale(1); }
+        .login-card { animation: fadeUp 0.5s ease-out; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus {
-            -webkit-box-shadow: 0 0 0 1000px white inset !important;
-            -webkit-text-fill-color: #1e293b !important;
+            -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.08) inset !important;
+            -webkit-text-fill-color: #fff !important;
+            caret-color: #fff;
         }
     </style>
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 flex items-center justify-center p-4">
 
-    {{-- Left: Image/Accent Side --}}
-    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-700 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <svg class="w-full h-full" viewBox="0 0 400 400" fill="none">
-                <circle cx="200" cy="200" r="180" stroke="white" stroke-width="0.5"/>
-                <circle cx="200" cy="200" r="140" stroke="white" stroke-width="0.5"/>
-                <circle cx="200" cy="200" r="100" stroke="white" stroke-width="0.5"/>
-                <circle cx="200" cy="200" r="60" stroke="white" stroke-width="0.5"/>
-            </svg>
-        </div>
-        <div class="relative z-10 flex flex-col justify-center px-12 text-white">
-            <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center mb-8">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-            </div>
-            <h2 class="text-3xl font-semibold leading-tight mb-3">Area Terbatas</h2>
-            <p class="text-white/60 text-sm leading-relaxed max-w-xs">Halaman ini hanya untuk pengguna yang memiliki akses. Silakan masuk dengan akun Anda.</p>
-        </div>
-        <div class="absolute bottom-8 left-12 text-white/30 text-xs">&copy; {{ date('Y') }}</div>
-    </div>
+    <div class="w-full max-w-sm relative z-10">
+        <div class="login-card bg-white/10 backdrop-blur-2xl rounded-2xl shadow-2xl p-8 border border-white/10">
 
-    {{-- Right: Login Form --}}
-    <div class="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center p-6 sm:p-10">
-        <div class="login-card w-full max-w-sm">
-
-            {{-- Mobile logo --}}
-            <div class="lg:hidden flex justify-center mb-8">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                 </div>
-            </div>
-
-            <div class="mb-8">
-                <h1 class="text-2xl font-semibold text-slate-800">Masuk</h1>
-                <p class="text-slate-400 text-sm mt-1.5">Silakan masuk untuk melanjutkan</p>
+                <h1 class="text-2xl font-bold text-white">Selamat Datang</h1>
+                <p class="text-blue-200/50 text-sm mt-1">Masuk untuk melanjutkan</p>
             </div>
 
             @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl">
+                <div class="mb-5 p-3 bg-red-500/15 border border-red-400/20 rounded-xl">
                     @foreach ($errors->all() as $error)
-                        <p class="text-sm text-red-600 flex items-center gap-2">
+                        <p class="text-sm text-red-300 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0"></span>
                             {{ $error }}
                         </p>
@@ -76,21 +48,21 @@
 
             <form action="{{ route('minda.login') }}" method="POST">
                 @csrf
-                <div class="mb-5">
-                    <label class="block text-slate-600 text-sm font-medium mb-2">Email</label>
+                <div class="mb-4">
+                    <label class="block text-white/70 text-sm font-semibold mb-2">Email</label>
                     <input type="email" name="email" value="{{ old('email') }}" required
-                        class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm placeholder-slate-300 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
-                        placeholder="nama@email.com">
+                        class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white placeholder-white/30 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 transition text-sm"
+                        placeholder="email@contoh.com">
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-slate-600 text-sm font-medium mb-2">Password</label>
+                    <label class="block text-white/70 text-sm font-semibold mb-2">Password</label>
                     <div class="relative">
                         <input type="password" name="password" required id="password-input"
-                            class="w-full px-4 py-3 pr-12 rounded-xl bg-white border border-slate-200 text-slate-800 text-sm placeholder-slate-300 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
-                            placeholder="Masukkan password">
+                            class="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 border border-white/15 text-white placeholder-white/30 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 transition text-sm"
+                            placeholder="••••••••">
                         <button type="button" onclick="togglePassword()" tabindex="-1"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition">
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition">
                             <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -104,22 +76,22 @@
 
                 <div class="mb-6 flex items-center">
                     <input type="checkbox" name="remember" id="remember"
-                        class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-200 focus:ring-offset-0 transition">
-                    <label for="remember" class="ml-2 text-sm text-slate-500">Ingat saya</label>
+                        class="w-4 h-4 rounded border-white/20 bg-white/10 text-indigo-500 focus:ring-indigo-400/30 focus:ring-offset-0">
+                    <label for="remember" class="ml-2 text-sm text-white/50">Ingat Saya</label>
                 </div>
 
                 <button type="submit"
-                    class="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-indigo-700 transition-all duration-200 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 text-sm">
+                    class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-indigo-500/25 text-sm">
                     Masuk
                 </button>
             </form>
 
-            <div class="mt-8 text-center">
-                <a href="{{ url('/') }}" class="text-xs text-slate-400 hover:text-slate-600 transition">&larr; Kembali</a>
+            <div class="mt-6 text-center">
+                <a href="{{ url('/') }}" class="text-sm text-white/25 hover:text-white/50 transition">← Kembali</a>
             </div>
-
-            <p class="lg:hidden text-center text-slate-300 text-xs mt-6">&copy; {{ date('Y') }}</p>
         </div>
+
+        <p class="text-center text-white/10 text-xs mt-6">&copy; {{ date('Y') }}</p>
     </div>
 
     <script>
