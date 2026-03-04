@@ -23,7 +23,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             
             <!-- Left Column - Berita List -->
-            <div class="flex-1 order-1">
+            <div class="flex-1 order-1 min-w-0">
                 <div class="space-y-10">
                     @forelse($berita as $item)
                     <article>
@@ -41,7 +41,7 @@
                             @endif
                         </a>
                         {{-- Title --}}
-                        <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-snug">
+                        <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-snug break-words">
                             <a href="{{ route('berita.show', $item->slug) }}" class="hover:text-[#6E7098] transition">
                                 {{ $item->judul }}
                             </a>
@@ -51,7 +51,7 @@
                             {{ ($item->tanggal ?? $item->created_at)->format('j F Y') }} | Editor Website
                         </p>
                         {{-- Excerpt --}}
-                        <p class="text-gray-600 text-sm leading-relaxed text-justify mb-3">
+                        <p class="text-gray-600 text-sm leading-relaxed text-justify mb-3 break-words">
                             {{ Str::limit(strip_tags($item->konten), 250) }}
                         </p>
                         {{-- Read More --}}
