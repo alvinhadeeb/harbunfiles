@@ -29,7 +29,7 @@ class BeritaPublicController extends Controller
             }
         }
 
-        $berita = $query->orderByDesc('tanggal')->paginate(6);
+        $berita = $query->orderByDesc('tanggal')->paginate(6)->withQueryString();
 
         // Get all categories from database for sidebar
         $kategoriList = Kategori::orderBy('nama')->pluck('nama');
