@@ -8,10 +8,10 @@ class HeaderSetting extends Model
 {
     protected $table = 'header_settings';
 
-    protected $fillable = ['logo'];
+    protected $fillable = ['logo', 'logo2'];
 
     public static function getInstance()
     {
-        return self::firstOrCreate(['id' => 1], ['logo' => null]);
+        return self::firstOrCreate(['id' => 1], ['logo' => null, 'logo2' => null]);
     }
 }

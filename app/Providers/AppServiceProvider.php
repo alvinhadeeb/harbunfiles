@@ -28,7 +28,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with('navLembagaList', Lembaga::where('aktif', true)->orderBy('urutan')->get());
             $view->with('headerMenus', Schema::hasTable('header_menus') ? HeaderMenu::where('aktif', true)->orderBy('urutan')->get() : collect());
             $headerLogo = Schema::hasTable('header_settings') ? HeaderSetting::getInstance()->logo : null;
+            $headerLogo2 = Schema::hasTable('header_settings') ? HeaderSetting::getInstance()->logo2 : null;
             $view->with('headerLogo', $headerLogo);
+            $view->with('headerLogo2', $headerLogo2);
         });
     }
 }

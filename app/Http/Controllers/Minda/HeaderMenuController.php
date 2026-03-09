@@ -43,6 +43,32 @@ class HeaderMenuController extends Controller
         return redirect()->route('minda.header.index')->with('success', 'Foto/logo header berhasil dihapus.');
     }
 
+    public function updateLogo2(Request $request)
+    {
+        $request->validate([
+            'logo2' => 'required|image|max:2048',
+        ]);
+
+        $setting = HeaderSetting::getInstance();
+        if ($setting->logo2) {
+            Storage::disk('public')->delete($setting->logo2);
+        }
+        $path = $request->file('logo2')->store('header', 'public');
+        $setting->update(['logo2' => $path]);
+
+        return redirect()->route('minda.header.index')->with('success', 'Logo kedua berhasil diunggah.');
+    }
+
+    public function removeLogo2()
+    {
+        $setting = HeaderSetting::getInstance();
+        if ($setting->logo2) {
+            Storage::disk('public')->delete($setting->logo2);
+            $setting->update(['logo2' => null]);
+        }
+        return redirect()->route('minda.header.index')->with('success', 'Logo kedua berhasil dihapus.');
+    }
+
     public function create()
     {
         return view('minda.header.create');

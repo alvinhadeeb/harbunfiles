@@ -139,6 +139,8 @@ Route::prefix($adminPrefix)->name('minda.')->group(function () {
         Route::middleware('permission:header')->group(function () {
             Route::put('header/logo', [App\Http\Controllers\Minda\HeaderMenuController::class, 'updateLogo'])->name('header.logo.update');
             Route::delete('header/logo', [App\Http\Controllers\Minda\HeaderMenuController::class, 'removeLogo'])->name('header.logo.remove');
+            Route::put('header/logo2', [App\Http\Controllers\Minda\HeaderMenuController::class, 'updateLogo2'])->name('header.logo2.update');
+            Route::delete('header/logo2', [App\Http\Controllers\Minda\HeaderMenuController::class, 'removeLogo2'])->name('header.logo2.remove');
             Route::resource('header', App\Http\Controllers\Minda\HeaderMenuController::class)->except(['show']);
         });
         Route::middleware('permission:faq')->group(function () {

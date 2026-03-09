@@ -160,7 +160,9 @@
             <div class="header-inner flex items-center justify-between h-20 lg:h-28">
                 <a href="{{ url('/') }}" class="flex items-center gap-3 shrink-0">
                     <img src="{{ isset($headerLogo) && $headerLogo ? asset('storage/' . $headerLogo) : asset('images/logo-hb.png') }}" alt="Logo Harapan Bunda" class="header-logo w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain">
-                    <img src="{{ asset('images/header2.png') }}" alt="Logo JSIT Indonesia" class="header-logo-2 h-[100px] md:h-[140px] lg:h-[160px] w-auto object-contain">
+                    @if(isset($headerLogo2) && $headerLogo2)
+                        <img src="{{ asset('storage/' . $headerLogo2) }}" alt="Logo Kedua" class="header-logo-2 h-[100px] md:h-[140px] lg:h-[160px] w-auto object-contain">
+                    @endif
                 </a>
 
                 <button id="mobile-menu-btn" class="lg:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-gray-100 transition" aria-label="Toggle menu">

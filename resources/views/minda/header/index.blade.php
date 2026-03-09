@@ -35,6 +35,36 @@
         </div>
     </div>
 
+    {{-- Logo Kedua (JSIT) --}}
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Logo Kedua (Kanan Logo Utama)</h3>
+        <p class="text-gray-600 text-sm mb-4">Logo ini tampil di sebelah kanan logo utama di header. Kosongkan jika tidak ingin menampilkan logo kedua.</p>
+        <div class="flex flex-wrap items-end gap-6">
+            <div class="flex items-center gap-4">
+                @if($headerSetting->logo2)
+                    <img src="{{ asset('storage/' . $headerSetting->logo2) }}" alt="Logo Kedua" class="w-24 h-24 object-contain border border-gray-200 rounded-lg">
+                    <form action="{{ route('minda.header.logo2.remove') }}" method="POST" class="inline" data-confirm="Hapus logo kedua?">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium text-sm hover:bg-red-200 transition">Hapus Logo</button>
+                    </form>
+                @else
+                    <div class="w-24 h-24 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-xs text-center px-1">Belum ada</div>
+                @endif
+            </div>
+            <form action="{{ route('minda.header.logo2.update') }}" method="POST" enctype="multipart/form-data" class="flex items-end gap-3">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1 text-sm">Unggah logo kedua</label>
+                    <input type="file" name="logo2" accept="image/*" required class="text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    @error('logo2')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition">Unggah</button>
+            </form>
+        </div>
+    </div>
+
     {{-- Daftar Menu --}}
     <div class="flex items-center justify-between mb-6">
         <p class="text-gray-600">Atur menu yang tampil di header website. Urutan mengikuti kolom Urutan.</p>
