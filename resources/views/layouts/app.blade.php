@@ -89,11 +89,15 @@
         header.scrolled .header-logo {
             width: 140px !important; height: 140px !important;
         }
+        header.scrolled .header-logo-2 {
+            height: 50px !important;
+        }
         @media (min-width: 1024px) {
             header.scrolled .header-inner { height: 72px !important; }
             header.scrolled .header-logo { width: 180px !important; height: 180px !important; }
+            header.scrolled .header-logo-2 { height: 60px !important; }
         }
-        .header-inner, .header-logo {
+        .header-inner, .header-logo, .header-logo-2 {
             transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
@@ -154,8 +158,9 @@
     <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="header-inner flex items-center justify-between h-20 lg:h-28">
-                <a href="{{ url('/') }}" class="flex items-center gap-2 shrink-0">
+                <a href="{{ url('/') }}" class="flex items-center gap-3 shrink-0">
                     <img src="{{ isset($headerLogo) && $headerLogo ? asset('storage/' . $headerLogo) : asset('images/logo-hb.png') }}" alt="Logo Harapan Bunda" class="header-logo w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain">
+                    <img src="{{ asset('images/header2.png') }}" alt="Logo JSIT Indonesia" class="header-logo-2 h-[100px] md:h-[140px] lg:h-[160px] w-auto object-contain">
                 </a>
 
                 <button id="mobile-menu-btn" class="lg:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-gray-100 transition" aria-label="Toggle menu">
