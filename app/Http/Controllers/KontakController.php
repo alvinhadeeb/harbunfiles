@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kontak;
 use App\Models\Lembaga;
 use Illuminate\Http\Request;
 
@@ -10,11 +11,12 @@ class KontakController extends Controller
     public function index()
     {
         // Ambil semua lembaga yang aktif dari database
-        $lembagaList = Lembaga::where('aktif', true)
+        $lembagaRaw = Lembaga::where('aktif', true)
             ->orderBy('urutan')
             ->orderBy('nama')
-            ->get()
-            ->map(function($lembaga) {
+            ->get();
+
+        $lembagaList = $lembagaRaw->map(function($lembaga) {
                 // Format data untuk compatibility dengan view
                 $logoPath = $lembaga->logo
                     ? (str_starts_with($lembaga->logo, 'images/') 
@@ -34,6 +36,9 @@ class KontakController extends Controller
                 ];
             });
         
-        return view('kontak', compact('lembagaList'));
+        $kontak = Kontak::first();
+        $footerLembaga = $lembagaRaw;
+        
+        return view('kontak', compact('lembagaList', 'kontak', 'footerLembaga'));
     }
 }
