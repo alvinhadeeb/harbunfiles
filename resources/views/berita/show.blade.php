@@ -39,6 +39,10 @@
                     <span>{{ ($berita->tanggal ?? $berita->created_at)->format('j F Y') }}</span>
                 </div>
             </div>
+            <div>
+                <h4 class="text-sm font-bold text-gray-800 mb-1">Pengunggah</h4>
+                <p class="text-gray-500 text-sm">{{ $berita->admin?->name ?? 'Editor Website' }}</p>
+            </div>
         </div>
     </div>
 </div>

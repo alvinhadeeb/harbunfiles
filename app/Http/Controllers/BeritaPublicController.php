@@ -11,7 +11,7 @@ class BeritaPublicController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Berita::where('status', 'published');
+        $query = Berita::with('admin')->where('status', 'published');
 
         // Filter by kategori if provided
         if ($request->has('kategori') && $request->kategori) {
@@ -35,7 +35,8 @@ class BeritaPublicController extends Controller
         $kategoriList = Kategori::orderBy('nama')->pluck('nama');
 
         // Get latest 5 berita for sidebar "Informasi Terbaru"
-        $beritaTerbaru = Berita::where('status', 'published')
+        $beritaTerbaru = Berita::with('admin')
+            ->where('status', 'published')
             ->orderByDesc('tanggal')
             ->take(5)
             ->get();
@@ -45,12 +46,14 @@ class BeritaPublicController extends Controller
 
     public function show($slug)
     {
-        $berita = Berita::where('slug', $slug)
+        $berita = Berita::with('admin')
+            ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
 
         // Get latest 5 berita for sidebar
-        $beritaTerbaru = Berita::where('status', 'published')
+        $beritaTerbaru = Berita::with('admin')
+            ->where('status', 'published')
             ->where('id', '!=', $berita->id)
             ->orderByDesc('tanggal')
             ->take(5)

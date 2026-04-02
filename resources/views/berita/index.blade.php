@@ -48,7 +48,7 @@
                         </h2>
                         {{-- Meta --}}
                         <p class="text-gray-400 text-xs mb-3">
-                            {{ ($item->tanggal ?? $item->created_at)->format('j F Y') }} | Editor Website
+                            {{ ($item->tanggal ?? $item->created_at)->format('j F Y') }} | Pengunggah: {{ $item->admin?->name ?? 'Editor Website' }}
                         </p>
                         {{-- Excerpt --}}
                         <p class="text-gray-600 text-sm leading-relaxed text-justify mb-3 break-words">

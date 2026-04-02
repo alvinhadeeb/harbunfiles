@@ -17,6 +17,7 @@ class Berita extends Model
         'gambar',
         'status',
         'tanggal',
+        'admin_id',
     ];
 
     protected $casts = [
@@ -29,6 +30,14 @@ class Berita extends Model
     public function lembagas()
     {
         return $this->belongsToMany(Lembaga::class, 'berita_lembaga');
+    }
+
+    /**
+     * Admin yang mengupload berita ini
+     */
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class);
     }
 
     /**

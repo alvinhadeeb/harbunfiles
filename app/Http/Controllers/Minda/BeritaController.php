@@ -25,7 +25,7 @@ class BeritaController extends Controller
     {
         $allowedLembaga = $this->getAllowedLembagaIds();
 
-        $query = Berita::with('lembagas')->orderByDesc('tanggal');
+        $query = Berita::with(['lembagas', 'admin'])->orderByDesc('tanggal');
 
         // Filter berita berdasarkan lembaga yang diizinkan
         if ($allowedLembaga !== null) {
@@ -68,6 +68,7 @@ class BeritaController extends Controller
         }
 
         $validated['slug'] = Str::slug($validated['judul']);
+        $validated['admin_id'] = auth()->guard('admin')->id();
         
         // Hapus lembaga_ids dari validated (bukan kolom di tabel berita)
         $lembagaIds = $request->input('lembaga_ids', []);
@@ -83,7 +84,7 @@ class BeritaController extends Controller
 
     public function edit(string $id)
     {
-        $berita = Berita::with('lembagas')->findOrFail($id);
+        $berita = Berita::with(['lembagas', 'admin'])->findOrFail($id);
         $kategoriList = Kategori::orderBy('nama')->get();
         $allowedLembaga = $this->getAllowedLembagaIds();
         $lembagaList = Lembaga::where('aktif', true)->orderBy('urutan')
@@ -95,7 +96,7 @@ class BeritaController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $berita = Berita::findOrFail($id);
+        $berita = Berita::with('admin')->findOrFail($id);
         
         $validated = $request->validate([
             'judul' => 'required|max:255',
