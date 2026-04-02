@@ -79,7 +79,11 @@
         }
 
         /* ===== Header Shrink ===== */
-        header { transition: box-shadow 0.3s ease; }
+        header {
+            transition: box-shadow 0.3s ease, background-color 0.3s ease;
+            will-change: box-shadow;
+            transform: translateZ(0);
+        }
         header.scrolled {
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
         }
@@ -98,8 +102,14 @@
             header.scrolled .header-logo-2 { height: 60px !important; }
         }
         .header-inner, .header-logo, .header-logo-2 {
-            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            transition-property: height, width, box-shadow, transform, opacity;
+            transition-duration: 0.35s;
+            transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
+        .header-inner { will-change: height; }
+        .header-logo, .header-logo-2 { will-change: width, height, transform; }
 
         /* ===== Parallax Banner ===== */
         .parallax-banner {
@@ -360,15 +370,26 @@
             var header = document.querySelector('header');
             var backBtn = document.getElementById('back-to-top');
             var ticking = false;
+            var isHeaderScrolled = false;
+            var shrinkOn = 72;
+            var shrinkOff = 48;
+
+            function setHeaderScrolled(nextState) {
+                if (!header || nextState === isHeaderScrolled) return;
+                isHeaderScrolled = nextState;
+                header.classList.toggle('scrolled', nextState);
+            }
 
             function onScroll() {
                 var scrollY = window.scrollY || window.pageYOffset;
 
                 // Header shrink
-                if (scrollY > 60) {
-                    header && header.classList.add('scrolled');
-                } else {
-                    header && header.classList.remove('scrolled');
+                if (isHeaderScrolled) {
+                    if (scrollY < shrinkOff) {
+                        setHeaderScrolled(false);
+                    }
+                } else if (scrollY > shrinkOn) {
+                    setHeaderScrolled(true);
                 }
 
                 // Back to top button
