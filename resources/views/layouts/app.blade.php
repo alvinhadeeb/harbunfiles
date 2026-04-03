@@ -188,9 +188,9 @@
     @stack('styles')
 </head>
 <body class="antialiased text-gray-800 bg-white">
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-50 h-20 lg:h-28 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="header-inner flex items-center justify-between h-20 lg:h-28">
+            <div class="header-inner absolute inset-0 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20 lg:h-28">
                 <a href="{{ url('/') }}" class="flex items-center gap-3 shrink-0">
                     <img src="{{ isset($headerLogo) && $headerLogo ? asset('storage/' . $headerLogo) : asset('images/logo-hb.png') }}" alt="Logo Harapan Bunda" class="header-logo w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain">
                     @if(isset($headerLogo2) && $headerLogo2)
