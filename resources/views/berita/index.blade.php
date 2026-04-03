@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('meta_title', 'Berita Terbaru - Harapan Bunda Purwokerto')
+@section('meta_description', 'Kumpulan berita terbaru dari Harapan Bunda Purwokerto.')
+@section('meta_url', route('berita.index'))
+@section('meta_type', 'website')
+@section('meta_image', asset('images/logo-hb.png'))
+
 @section('content')
 <!-- Title Section -->
 <div class="bg-white pt-10 pb-6">

@@ -2,6 +2,18 @@
 
 @section('title', 'Harapan Bunda Purwokerto - Beranda')
 
+@php
+    $homeOgImage = $bannerList->count() > 0
+        ? (str_starts_with($bannerList->first()->gambar, 'images/') ? asset($bannerList->first()->gambar) : asset('storage/' . $bannerList->first()->gambar))
+        : asset('images/logo-hb.png');
+@endphp
+
+@section('meta_title', 'Harapan Bunda Purwokerto')
+@section('meta_description', 'Website resmi Harapan Bunda Purwokerto.')
+@section('meta_url', url('/'))
+@section('meta_type', 'website')
+@section('meta_image', $homeOgImage)
+
 @section('content')
     {{-- Hero: full-width banner + carousel dots --}}
     <section class="relative w-full overflow-hidden" id="hero-section">

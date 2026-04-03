@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Berita;
 use App\Models\Kategori;
 use App\Models\Lembaga;
+use App\Models\Banner;
 
 class BeritaPublicController extends Controller
 {
@@ -51,6 +52,11 @@ class BeritaPublicController extends Controller
             ->where('status', 'published')
             ->firstOrFail();
 
+        $bannerFallback = Banner::where('aktif', true)->orderBy('urutan')->first();
+        $bannerFallbackImage = $bannerFallback && $bannerFallback->gambar
+            ? (str_starts_with($bannerFallback->gambar, 'images/') ? asset($bannerFallback->gambar) : asset('storage/' . $bannerFallback->gambar))
+            : asset('images/logo-hb.png');
+
         // Get latest 5 berita for sidebar
         $beritaTerbaru = Berita::with('admin')
             ->where('status', 'published')
@@ -61,6 +67,6 @@ class BeritaPublicController extends Controller
 
         $kategoriList = Kategori::orderBy('nama')->pluck('nama');
 
-        return view('berita.show', compact('berita', 'beritaTerbaru', 'kategoriList'));
+        return view('berita.show', compact('berita', 'beritaTerbaru', 'kategoriList', 'bannerFallbackImage'));
     }
 }

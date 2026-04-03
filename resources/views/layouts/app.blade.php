@@ -3,7 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Harapan Bunda Purwokerto')</title>
+    @php
+        $metaTitle = trim($__env->yieldContent('meta_title', $__env->yieldContent('title', 'Harapan Bunda Purwokerto')));
+        $metaDescription = trim($__env->yieldContent('meta_description', 'Website resmi Harapan Bunda Purwokerto.'));
+        $metaImage = trim($__env->yieldContent('meta_image', asset('images/logo-hb.png')));
+        $metaUrl = trim($__env->yieldContent('meta_url', url()->current()));
+        $metaType = trim($__env->yieldContent('meta_type', 'website'));
+    @endphp
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <link rel="canonical" href="{{ $metaUrl }}">
+
+    <meta property="og:site_name" content="Harapan Bunda Purwokerto">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $metaUrl }}">
+    <meta property="og:type" content="{{ $metaType }}">
+    <meta property="og:image" content="{{ $metaImage }}">
+    <meta property="og:image:secure_url" content="{{ $metaImage }}">
+    <meta property="og:image:alt" content="{{ $metaTitle }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    <meta name="twitter:image" content="{{ $metaImage }}">
     @if(file_exists(public_path('favicon.png')))
         <link rel="icon" href="{{ asset('favicon.png') }}?v={{ filemtime(public_path('favicon.png')) }}" type="image/png">
     @elseif(file_exists(public_path('favicon.ico')))

@@ -1,5 +1,17 @@
 @extends('layouts.app')
 
+@php
+    $lembagaOgImage = $lembaga->banner
+        ? (str_starts_with($lembaga->banner, 'images/') ? asset($lembaga->banner) : asset('storage/' . $lembaga->banner))
+        : asset('images/logo-hb.png');
+@endphp
+
+@section('meta_title', $lembaga->nama . ' - Harapan Bunda Purwokerto')
+@section('meta_description', Str::limit(strip_tags($lembaga->deskripsi ?? ''), 160))
+@section('meta_url', url()->current())
+@section('meta_type', 'website')
+@section('meta_image', $lembagaOgImage)
+
 @section('content')
 <!-- Banner Photo Section -->
 <div class="relative w-full overflow-hidden">

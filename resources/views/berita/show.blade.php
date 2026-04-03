@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('meta_title', $berita->judul . ' - Harapan Bunda Purwokerto')
+@section('meta_description', Str::limit(strip_tags($berita->konten), 160))
+@section('meta_url', route('berita.show', $berita->slug))
+@section('meta_type', 'article')
+@section('meta_image', $berita->gambar ? asset('storage/' . $berita->gambar) : ($bannerFallbackImage ?? asset('images/logo-hb.png')))
+
 @section('content')
 <!-- Banner Section - Full width photo with overlay title -->
 <div class="relative w-full h-[280px] md:h-[480px] overflow-hidden">
