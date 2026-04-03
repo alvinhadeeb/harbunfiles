@@ -103,15 +103,13 @@
 
         /* ===== Header Shrink ===== */
         header {
-            transition: box-shadow 0.3s ease, background-color 0.3s ease;
+            transition: box-shadow 0.3s ease, background-color 0.3s ease, height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: box-shadow;
             transform: translateZ(0);
         }
         header.scrolled {
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-        }
-        header.scrolled .header-inner {
-            height: 64px !important;
+            height: 64px;
         }
         header.scrolled .header-logo {
             width: 140px !important; height: 140px !important;
@@ -120,7 +118,7 @@
             height: 50px !important;
         }
         @media (min-width: 1024px) {
-            header.scrolled .header-inner { height: 72px !important; }
+            header.scrolled { height: 72px; }
             header.scrolled .header-logo { width: 180px !important; height: 180px !important; }
             header.scrolled .header-logo-2 { height: 60px !important; }
         }
@@ -133,6 +131,10 @@
         }
         .header-inner { will-change: height; }
         .header-logo, .header-logo-2 { will-change: width, height, transform; }
+        .header-spacer { height: 80px; }
+        @media (min-width: 1024px) {
+            .header-spacer { height: 112px; }
+        }
 
         /* ===== Parallax Banner ===== */
         .parallax-banner {
@@ -188,9 +190,10 @@
     @stack('styles')
 </head>
 <body class="antialiased text-gray-800 bg-white">
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50 h-20 lg:h-28 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="header-inner absolute inset-0 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20 lg:h-28">
+    <div class="header-spacer"></div>
+    <header class="bg-white border-b border-gray-100 fixed top-0 left-0 right-0 z-50 h-20 lg:h-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div class="header-inner flex items-center justify-between h-full">
                 <a href="{{ url('/') }}" class="flex items-center gap-3 shrink-0">
                     <img src="{{ isset($headerLogo) && $headerLogo ? asset('storage/' . $headerLogo) : asset('images/logo-hb.png') }}" alt="Logo Harapan Bunda" class="header-logo w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain">
                     @if(isset($headerLogo2) && $headerLogo2)
