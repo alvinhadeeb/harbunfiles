@@ -33,7 +33,7 @@
 <!-- Kategori & Dipublikasikan Row -->
 <div class="bg-white border-b border-gray-200">
     <div class="max-w-6xl mx-auto px-4 py-6">
-        <div class="flex flex-wrap gap-12">
+        <div class="flex flex-wrap items-start gap-12">
             <div>
                 <h4 class="text-sm font-bold text-gray-800 mb-1">Kategori Berita</h4>
                 <p class="text-gray-500 text-sm">{{ $berita->kategori ?? 'Informasi umum' }}</p>
@@ -48,6 +48,21 @@
             <div>
                 <h4 class="text-sm font-bold text-gray-800 mb-1">Pengunggah</h4>
                 <p class="text-gray-500 text-sm">{{ $berita->admin?->name ?? 'Editor Website' }}</p>
+            </div>
+            <div class="ml-auto">
+                <h4 class="text-sm font-bold text-gray-800 mb-1">Bagikan</h4>
+                <button
+                    type="button"
+                    id="copy-link-btn"
+                    class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-gray-50"
+                    data-copy-url="{{ url()->current() }}"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 8h8a2 2 0 012 2v8a2 2 0 01-2 2h-8a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+                    </svg>
+                    <span id="copy-link-label">Copy Link</span>
+                </button>
             </div>
         </div>
     </div>
@@ -130,6 +145,42 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function() {
+        var button = document.getElementById('copy-link-btn');
+        var label = document.getElementById('copy-link-label');
+        if (!button || !label) return;
+
+        button.addEventListener('click', function() {
+            var url = button.getAttribute('data-copy-url') || window.location.href;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function() {
+                    var originalText = label.textContent;
+                    label.textContent = 'Tersalin';
+                    setTimeout(function() {
+                        label.textContent = originalText;
+                    }, 1500);
+                });
+                return;
+            }
+
+            var tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            var originalText = label.textContent;
+            label.textContent = 'Tersalin';
+            setTimeout(function() {
+                label.textContent = originalText;
+            }, 1500);
+        });
+    })();
+</script>
 
 <!-- Footer -->
 <footer class="bg-gray-900 text-white py-16">
