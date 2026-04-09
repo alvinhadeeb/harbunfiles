@@ -191,7 +191,7 @@
 </head>
 <body class="antialiased text-gray-800 bg-white">
     <div class="header-spacer"></div>
-    <header class="bg-white border-b border-gray-100 fixed top-0 left-0 right-0 z-50 h-20 lg:h-28 overflow-hidden">
+    <header class="bg-white border-b border-gray-100 fixed top-0 left-0 right-0 z-50 h-20 lg:h-28 overflow-visible">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
             <div class="header-inner flex items-center justify-between h-full">
                 <a href="{{ url('/') }}" class="flex items-center gap-3 shrink-0">
