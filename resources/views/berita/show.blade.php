@@ -6,6 +6,10 @@
 @section('meta_type', 'article')
 @section('meta_image', $berita->gambar ? asset('storage/' . $berita->gambar) : ($bannerFallbackImage ?? asset('images/logo-hb.png')))
 
+@php
+    $fullImageUrl = $berita->gambar ? asset('storage/' . $berita->gambar) : null;
+@endphp
+
 @section('content')
 <!-- Banner Section - Full width photo with overlay title -->
 <div class="relative w-full h-[280px] md:h-[480px] overflow-hidden">
@@ -22,13 +26,49 @@
     <div class="absolute bottom-0 left-0 right-0 p-5 md:p-12">
         <div class="max-w-6xl mx-auto">
             <h1 class="text-xl md:text-4xl font-bold text-white leading-tight mb-3 md:mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">{{ $berita->judul }}</h1>
-            <div class="flex items-center gap-2 text-white/80 text-sm">
+            <div class="flex flex-wrap items-center gap-3 text-white/80 text-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <span>{{ ($berita->tanggal ?? $berita->created_at)->format('j F Y') }}</span>
+                @if($fullImageUrl)
+                    <button
+                        type="button"
+                        id="open-full-image-btn"
+                        class="inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/25 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white hover:bg-black/45"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h6m0 0v6m0-6L10 14"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4"/>
+                        </svg>
+                        Lihat Foto Penuh
+                    </button>
+                @endif
             </div>
         </div>
     </div>
 </div>
+
+@if($fullImageUrl)
+<div id="full-image-modal" class="fixed inset-0 z-[120] hidden" aria-hidden="true">
+    <div id="full-image-backdrop" class="absolute inset-0 bg-black/80"></div>
+    <div class="relative z-10 flex h-full w-full items-center justify-center p-4 md:p-8">
+        <button
+            type="button"
+            id="close-full-image-btn"
+            class="absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white transition hover:bg-white/30"
+            aria-label="Tutup foto penuh"
+        >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        <img
+            src="{{ $fullImageUrl }}"
+            alt="{{ $berita->judul }}"
+            class="max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl"
+        >
+    </div>
+</div>
+@endif
 
 <!-- Kategori & Dipublikasikan Row -->
 <div class="bg-white border-b border-gray-200">
@@ -150,35 +190,70 @@
     (function() {
         var button = document.getElementById('copy-link-btn');
         var label = document.getElementById('copy-link-label');
-        if (!button || !label) return;
+        if (button && label) {
+            button.addEventListener('click', function() {
+                var url = button.getAttribute('data-copy-url') || window.location.href;
 
-        button.addEventListener('click', function() {
-            var url = button.getAttribute('data-copy-url') || window.location.href;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(function() {
+                        var originalText = label.textContent;
+                        label.textContent = 'Tersalin';
+                        setTimeout(function() {
+                            label.textContent = originalText;
+                        }, 1500);
+                    });
+                    return;
+                }
 
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function() {
-                    var originalText = label.textContent;
-                    label.textContent = 'Tersalin';
-                    setTimeout(function() {
-                        label.textContent = originalText;
-                    }, 1500);
-                });
-                return;
+                var tempInput = document.createElement('input');
+                tempInput.value = url;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                var originalText = label.textContent;
+                label.textContent = 'Tersalin';
+                setTimeout(function() {
+                    label.textContent = originalText;
+                }, 1500);
+            });
+        }
+
+        var openImageButton = document.getElementById('open-full-image-btn');
+        var modal = document.getElementById('full-image-modal');
+        var closeImageButton = document.getElementById('close-full-image-btn');
+        var backdrop = document.getElementById('full-image-backdrop');
+
+        if (openImageButton && modal) {
+            var openModal = function() {
+                modal.classList.remove('hidden');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('overflow-hidden');
+            };
+
+            var closeModal = function() {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('overflow-hidden');
+            };
+
+            openImageButton.addEventListener('click', openModal);
+
+            if (closeImageButton) {
+                closeImageButton.addEventListener('click', closeModal);
             }
 
-            var tempInput = document.createElement('input');
-            tempInput.value = url;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
+            if (backdrop) {
+                backdrop.addEventListener('click', closeModal);
+            }
 
-            var originalText = label.textContent;
-            label.textContent = 'Tersalin';
-            setTimeout(function() {
-                label.textContent = originalText;
-            }, 1500);
-        });
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        }
     })();
 </script>
 
