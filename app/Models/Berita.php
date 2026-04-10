@@ -41,6 +41,14 @@ class Berita extends Model
     }
 
     /**
+     * Foto-foto sisipan untuk ditampilkan di tengah konten berita.
+     */
+    public function inlineImages()
+    {
+        return $this->hasMany(BeritaImage::class)->orderBy('urutan')->orderBy('id');
+    }
+
+    /**
      * Backward compatible: ambil lembaga pertama (untuk tampilan yang hanya butuh 1)
      */
     public function getLembagaAttribute()

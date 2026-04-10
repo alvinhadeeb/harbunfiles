@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Minda;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
+use App\Support\FileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,7 +21,7 @@ class SidebarController extends Controller
         $validated = $request->validate([
             'sidebar_title' => 'required|string|max:50',
             'sidebar_subtitle' => 'required|string|max:50',
-            'sidebar_logo' => 'nullable|image|max:1024',
+            'sidebar_logo' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:1024',
         ]);
 
         $setting = SiteSetting::getInstance();
@@ -32,7 +33,7 @@ class SidebarController extends Controller
             if ($setting->sidebar_logo) {
                 Storage::disk('public')->delete($setting->sidebar_logo);
             }
-            $setting->sidebar_logo = $request->file('sidebar_logo')->store('sidebar', 'public');
+            $setting->sidebar_logo = FileUpload::storePublic($request->file('sidebar_logo'), 'sidebar');
         }
 
         $setting->save();

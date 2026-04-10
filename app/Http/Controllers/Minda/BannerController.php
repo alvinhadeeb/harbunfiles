@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Minda;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Support\FileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,12 +25,12 @@ class BannerController extends Controller
     {
         $validated = $request->validate([
             'judul' => 'nullable|max:255',
-            'gambar' => 'required|image|max:5120',
+            'gambar' => 'required|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:5120',
             'aktif' => 'nullable',
             'urutan' => 'nullable|integer',
         ]);
 
-        $validated['gambar'] = $request->file('gambar')->store('banner', 'public');
+        $validated['gambar'] = FileUpload::storePublic($request->file('gambar'), 'banner');
         $validated['aktif'] = $request->has('aktif');
         $validated['urutan'] = $validated['urutan'] ?? 0;
 
@@ -50,7 +51,7 @@ class BannerController extends Controller
 
         $validated = $request->validate([
             'judul' => 'nullable|max:255',
-            'gambar' => 'nullable|image|max:5120',
+            'gambar' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:5120',
             'aktif' => 'nullable',
             'urutan' => 'nullable|integer',
         ]);
@@ -60,7 +61,7 @@ class BannerController extends Controller
             if ($banner->gambar && !str_starts_with($banner->gambar, 'images/')) {
                 Storage::disk('public')->delete($banner->gambar);
             }
-            $validated['gambar'] = $request->file('gambar')->store('banner', 'public');
+            $validated['gambar'] = FileUpload::storePublic($request->file('gambar'), 'banner');
         } else {
             unset($validated['gambar']);
         }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Minda;
 
 use App\Http\Controllers\Controller;
+use App\Support\FileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\HeaderMenu;
@@ -20,14 +21,14 @@ class HeaderMenuController extends Controller
     public function updateLogo(Request $request)
     {
         $request->validate([
-            'logo' => 'required|image|max:2048',
+            'logo' => 'required|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:2048',
         ]);
 
         $setting = HeaderSetting::getInstance();
         if ($setting->logo) {
             Storage::disk('public')->delete($setting->logo);
         }
-        $path = $request->file('logo')->store('header', 'public');
+        $path = FileUpload::storePublic($request->file('logo'), 'header');
         $setting->update(['logo' => $path]);
 
         return redirect()->route('minda.header.index')->with('success', 'Foto/logo header berhasil diunggah.');
@@ -46,14 +47,14 @@ class HeaderMenuController extends Controller
     public function updateLogo2(Request $request)
     {
         $request->validate([
-            'logo2' => 'required|image|max:2048',
+            'logo2' => 'required|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:2048',
         ]);
 
         $setting = HeaderSetting::getInstance();
         if ($setting->logo2) {
             Storage::disk('public')->delete($setting->logo2);
         }
-        $path = $request->file('logo2')->store('header', 'public');
+        $path = FileUpload::storePublic($request->file('logo2'), 'header');
         $setting->update(['logo2' => $path]);
 
         return redirect()->route('minda.header.index')->with('success', 'Logo kedua berhasil diunggah.');

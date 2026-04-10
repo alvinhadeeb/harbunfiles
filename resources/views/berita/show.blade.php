@@ -118,7 +118,81 @@
                 <div class="mb-12">
                     <!-- Full Content -->
                     <div class="text-gray-700 leading-relaxed text-justify space-y-6 text-[15px]">
-                        {!! nl2br(e($berita->konten)) !!}
+                        @php
+                            $inlineImages = $berita->inlineImages ?? collect();
+                            $rawContent = trim((string) $berita->konten);
+                            $hasManualMarker = preg_match('/\(foto\d+\)/i', $rawContent) === 1;
+                        @endphp
+
+                        @if($hasManualMarker)
+                            @php
+                                $escapedContent = nl2br(e($rawContent));
+                                $usedImageIds = [];
+
+                                foreach ($inlineImages as $index => $inlineImage) {
+                                    $photoNum = $index + 1;
+                                    $token = '(foto' . $photoNum . ')';
+                                    $figureHtml = '<figure class="my-6 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-2">'
+                                        . '<img src="' . e(asset('storage/' . $inlineImage->path)) . '" alt="Foto pelengkap berita" class="w-full rounded-lg object-contain">'
+                                        . '</figure>';
+
+                                    $replacedContent = preg_replace('/\(foto' . preg_quote($photoNum, '/') . '\)/i', $figureHtml, $escapedContent, 1, $replaceCount);
+                                    if ($replaceCount > 0) {
+                                        $usedImageIds[] = $inlineImage->id;
+                                        $escapedContent = $replacedContent;
+                                    }
+                                }
+
+                                $remainingImages = $inlineImages->whereNotIn('id', $usedImageIds)->values();
+                            @endphp
+
+                            {!! $escapedContent !!}
+
+                            @foreach($remainingImages as $remainingImage)
+                                <figure class="my-6 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-2">
+                                    <img
+                                        src="{{ asset('storage/' . $remainingImage->path) }}"
+                                        alt="Foto pelengkap berita"
+                                        class="w-full rounded-lg object-contain"
+                                    >
+                                </figure>
+                            @endforeach
+                        @else
+                            @php
+                                $paragraphs = preg_split('/\r\n\r\n|\n\n/', $rawContent);
+                                $paragraphs = array_values(array_filter($paragraphs, fn ($paragraph) => trim($paragraph) !== ''));
+                                if (empty($paragraphs)) {
+                                    $paragraphs = [$rawContent];
+                                }
+                                $shownInlineImageCount = 0;
+                            @endphp
+
+                            @foreach($paragraphs as $paragraph)
+                                <p>{!! nl2br(e($paragraph)) !!}</p>
+
+                                @if($inlineImages->count() > $shownInlineImageCount && $loop->iteration % 2 === 0)
+                                    @php $inlineImage = $inlineImages[$shownInlineImageCount]; @endphp
+                                    <figure class="my-6 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-2">
+                                        <img
+                                            src="{{ asset('storage/' . $inlineImage->path) }}"
+                                            alt="Foto pelengkap berita"
+                                            class="w-full rounded-lg object-contain"
+                                        >
+                                    </figure>
+                                    @php $shownInlineImageCount++; @endphp
+                                @endif
+                            @endforeach
+
+                            @for($i = $shownInlineImageCount; $i < $inlineImages->count(); $i++)
+                                <figure class="my-6 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-2">
+                                    <img
+                                        src="{{ asset('storage/' . $inlineImages[$i]->path) }}"
+                                        alt="Foto pelengkap berita"
+                                        class="w-full rounded-lg object-contain"
+                                    >
+                                </figure>
+                            @endfor
+                        @endif
                     </div>
 
                     <!-- Back Link -->

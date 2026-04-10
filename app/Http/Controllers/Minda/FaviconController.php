@@ -23,7 +23,7 @@ class FaviconController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'favicon' => 'required|image|mimes:png,jpg,jpeg,ico,svg,webp|max:1024',
+            'favicon' => 'required|file|extensions:png,jpg,jpeg,ico,svg,webp|max:1024',
         ]);
 
         // Hapus favicon lama

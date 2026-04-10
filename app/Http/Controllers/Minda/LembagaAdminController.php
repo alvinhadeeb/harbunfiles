@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Minda;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lembaga;
+use App\Support\FileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -58,8 +59,8 @@ class LembagaAdminController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|max:255',
-            'logo' => 'nullable|image|max:2048',
-            'banner' => 'nullable|image|max:5120',
+            'logo' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:2048',
+            'banner' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:5120',
             'banner_rasio' => 'nullable|in:3:1,16:9,2:1,bebas',
             'banner_judul' => 'nullable|max:255',
             'banner_subjudul' => 'nullable|max:255',
@@ -84,10 +85,10 @@ class LembagaAdminController extends Controller
         $validated['slug'] = Str::slug($validated['nama']);
 
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('lembaga/logo', 'public');
+            $validated['logo'] = FileUpload::storePublic($request->file('logo'), 'lembaga/logo');
         }
         if ($request->hasFile('banner')) {
-            $validated['banner'] = $request->file('banner')->store('lembaga/banner', 'public');
+            $validated['banner'] = FileUpload::storePublic($request->file('banner'), 'lembaga/banner');
         }
 
         // Parse misi from textarea (one per line)
@@ -119,8 +120,8 @@ class LembagaAdminController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|max:255',
-            'logo' => 'nullable|image|max:2048',
-            'banner' => 'nullable|image|max:5120',
+            'logo' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:2048',
+            'banner' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:5120',
             'banner_rasio' => 'nullable|in:3:1,16:9,2:1,bebas',
             'banner_judul' => 'nullable|max:255',
             'banner_subjudul' => 'nullable|max:255',
@@ -146,7 +147,7 @@ class LembagaAdminController extends Controller
             if ($lembaga->logo && !str_starts_with($lembaga->logo, 'images/')) {
                 Storage::disk('public')->delete($lembaga->logo);
             }
-            $validated['logo'] = $request->file('logo')->store('lembaga/logo', 'public');
+            $validated['logo'] = FileUpload::storePublic($request->file('logo'), 'lembaga/logo');
         } else {
             unset($validated['logo']);
         }
@@ -155,7 +156,7 @@ class LembagaAdminController extends Controller
             if ($lembaga->banner && !str_starts_with($lembaga->banner, 'images/')) {
                 Storage::disk('public')->delete($lembaga->banner);
             }
-            $validated['banner'] = $request->file('banner')->store('lembaga/banner', 'public');
+            $validated['banner'] = FileUpload::storePublic($request->file('banner'), 'lembaga/banner');
         } else {
             unset($validated['banner']);
         }

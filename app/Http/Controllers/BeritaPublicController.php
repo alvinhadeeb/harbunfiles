@@ -47,7 +47,7 @@ class BeritaPublicController extends Controller
 
     public function show($slug)
     {
-        $berita = Berita::with('admin')
+        $berita = Berita::with(['admin', 'inlineImages'])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();

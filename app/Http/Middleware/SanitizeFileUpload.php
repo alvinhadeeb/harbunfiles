@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class SanitizeFileUpload
 {
@@ -23,7 +24,12 @@ class SanitizeFileUpload
                 }
 
                 // 1. Check real MIME type (not just extension)
-                $realMime = $file->getMimeType();
+                try {
+                    $realMime = $file->getMimeType();
+                } catch (Throwable $e) {
+                    // Fallback for environments where php_fileinfo is unavailable.
+                    $realMime = $file->getClientMimeType();
+                }
                 $allowedMimes = [
                     'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/avif',
                 ];

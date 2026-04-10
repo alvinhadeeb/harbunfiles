@@ -55,6 +55,7 @@
 
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Konten <span class="text-red-500">*</span></label>
+                <p class="text-gray-600 text-sm mb-2">Mudahnya: cukup tulis konten biasa, foto sisipan akan ditempatkan otomatis oleh sistem.</p>
                 <textarea name="konten" rows="10" required
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition @error('konten') border-red-500 @enderror">{{ old('konten') }}</textarea>
                 @error('konten')
@@ -63,18 +64,34 @@
             </div>
 
             <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Gambar</label>
+                <label class="block text-gray-700 font-semibold mb-2">Konten Berita</label>
                 <input type="file" name="gambar" accept="image/*"
+                    id="berita-gambar-input"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition @error('gambar') border-red-500 @enderror">
                 <p class="text-gray-500 text-sm mt-1">Format: JPG, PNG. Maksimal 2MB</p>
+                <div id="berita-gambar-preview" class="mt-3 hidden"></div>
                 @error('gambar')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            
+                <input type="file" name="inline_images[]" accept="image/*" multiple
+                    id="berita-inline-input"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition @error('inline_images') border-red-500 @enderror @error('inline_images.*') border-red-500 @enderror">
+                <p class="text-gray-500 text-sm mt-1">Bisa upload max 3 foto. Opsional: tulis marker <strong>(foto1)</strong>, <strong>(foto2)</strong>, <strong>(foto3)</strong> di konten untuk posisi persis.</p>
+                <div id="berita-inline-preview" class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 hidden"></div>
+                @error('inline_images')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+                @error('inline_images.*')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <input type="hidden" name="status" value="published">
 
-            <div class="mb-6">
+            <div class="mt-8 mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Tanggal Berita</label>
                 <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition @error('tanggal') border-red-500 @enderror">
@@ -95,4 +112,68 @@
         </form>
     </div>
 </div>
+
+<script>
+    (function() {
+        var gambarInput = document.getElementById('berita-gambar-input');
+        var gambarPreview = document.getElementById('berita-gambar-preview');
+        var inlineInput = document.getElementById('berita-inline-input');
+        var inlinePreview = document.getElementById('berita-inline-preview');
+
+        var gambarInput = document.getElementById('berita-gambar-input');
+        var gambarPreview = document.getElementById('berita-gambar-preview');
+        var inlineInput = document.getElementById('berita-inline-input');
+        var inlinePreview = document.getElementById('berita-inline-preview');
+
+        var renderImagePreview = function(file, target, single) {
+            if (!file) return;
+
+            var url = URL.createObjectURL(file);
+            var wrapper = document.createElement('div');
+            wrapper.className = 'rounded-lg border border-gray-200 bg-gray-50 p-3';
+            wrapper.innerHTML = '<div class="text-sm font-medium text-gray-700 mb-2">' + file.name + '</div>' +
+                '<img src="' + url + '" alt="Preview" class="w-full ' + (single ? 'max-w-sm' : 'h-32') + ' object-contain rounded bg-white border">';
+            target.appendChild(wrapper);
+        };
+
+        if (gambarInput && gambarPreview) {
+            gambarInput.addEventListener('change', function() {
+                gambarPreview.innerHTML = '';
+                var file = gambarInput.files && gambarInput.files[0];
+                if (!file) {
+                    gambarPreview.classList.add('hidden');
+                    return;
+                }
+
+                gambarPreview.classList.remove('hidden');
+                renderImagePreview(file, gambarPreview, true);
+            });
+        }
+
+        // Handle single inline image input with multiple files
+        if (inlineInput && inlinePreview) {
+            inlineInput.addEventListener('change', function() {
+                inlinePreview.innerHTML = '';
+                var files = Array.from(inlineInput.files || []);
+                if (!files.length) {
+                    inlinePreview.classList.add('hidden');
+                    return;
+                }
+
+                inlinePreview.classList.remove('hidden');
+                files.forEach(function(file, index) {
+                    var card = document.createElement('div');
+                    card.className = 'rounded-lg border border-gray-200 bg-gray-50 p-3';
+                    var url = URL.createObjectURL(file);
+                    card.innerHTML = '<div class="flex items-center justify-between gap-2 mb-2">'
+                        + '<span class="text-sm font-medium text-gray-700">Foto ' + (index + 1) + '</span>'
+                        + '<span class="text-xs text-gray-500 truncate max-w-[180px]" title="' + file.name + '">' + file.name + '</span>'
+                        + '</div>'
+                        + '<img src="' + url + '" alt="Preview foto sisipan" class="w-full h-40 object-contain rounded bg-white border">';
+                    inlinePreview.appendChild(card);
+                });
+            });
+        }
+    })();
+</script>
 @endsection

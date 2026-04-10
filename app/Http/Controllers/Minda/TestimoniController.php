@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Minda;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimoni;
+use App\Support\FileUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,13 +27,13 @@ class TestimoniController extends Controller
             'nama' => 'required|max:255',
             'jabatan' => 'nullable|max:255',
             'isi' => 'required',
-            'foto' => 'nullable|image|max:2048',
+            'foto' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:2048',
             'aktif' => 'nullable',
             'urutan' => 'nullable|integer',
         ]);
 
         if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('testimoni', 'public');
+            $validated['foto'] = FileUpload::storePublic($request->file('foto'), 'testimoni');
         }
 
         $validated['aktif'] = $request->has('aktif');
@@ -57,7 +58,7 @@ class TestimoniController extends Controller
             'nama' => 'required|max:255',
             'jabatan' => 'nullable|max:255',
             'isi' => 'required',
-            'foto' => 'nullable|image|max:2048',
+            'foto' => 'nullable|file|extensions:jpg,jpeg,png,gif,webp,avif,svg|max:2048',
             'aktif' => 'nullable',
             'urutan' => 'nullable|integer',
         ]);
@@ -66,7 +67,7 @@ class TestimoniController extends Controller
             if ($testimoni->foto) {
                 Storage::disk('public')->delete($testimoni->foto);
             }
-            $validated['foto'] = $request->file('foto')->store('testimoni', 'public');
+            $validated['foto'] = FileUpload::storePublic($request->file('foto'), 'testimoni');
         }
 
         $validated['aktif'] = $request->has('aktif');
